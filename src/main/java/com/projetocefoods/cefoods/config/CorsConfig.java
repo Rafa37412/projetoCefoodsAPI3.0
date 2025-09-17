@@ -14,7 +14,10 @@ public class CorsConfig {
     public CorsFilter corsFilter() {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(true); // precisa ser true para cookies/autenticação
-        config.setAllowedOriginPatterns(List.of("http://localhost:8100")); // mais seguro que "*"
+        config.setAllowedOriginPatterns(List.of(
+            "http://localhost:8100",
+            "https://cefoodsapi-1-0-bd59ae6e7ee0.herokuapp.com"
+        ));
         config.setAllowedHeaders(List.of("*"));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
 
