@@ -11,7 +11,7 @@
     <description>API REST para o app Cefoods (Ionic + Angular)</description>
 
     <properties>
-        <java.version>21</java.version>
+        <java.version>17</java.version>
         <spring.boot.version>3.3.1</spring.boot.version>
     </properties>
 
