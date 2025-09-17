@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.cefoods</groupId>
@@ -64,8 +64,12 @@
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
         </dependency>
-		
 
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <optional>true</optional>
+        </dependency>
 
 
         <dependency>
@@ -74,58 +78,47 @@
         </dependency>
 
 
+        <!-- JDBI -->
+        <dependency>
+            <groupId>org.jdbi</groupId>
+            <artifactId>jdbi3-core</artifactId>
+            <version>3.45.1</version>
+        </dependency>
+
+        <!-- Suporte para trabalhar com SQL Objects no JDBI -->
+        <dependency>
+            <groupId>org.jdbi</groupId>
+            <artifactId>jdbi3-sqlobject</artifactId>
+            <version>3.45.1</version>
+        </dependency>
+
+        <!-- Se for usar com Spring Boot -->
+        <dependency>
+            <groupId>org.jdbi</groupId>
+            <artifactId>jdbi3-spring5</artifactId>
+            <version>3.45.1</version>
+        </dependency>
 
 
-		<!-- JDBI -->
-    <dependency>
-        <groupId>org.jdbi</groupId>
-        <artifactId>jdbi3-core</artifactId>
-        <version>3.45.1</version>
-    </dependency>
-
-    <!-- Suporte para trabalhar com SQL Objects no JDBI -->
-    <dependency>
-        <groupId>org.jdbi</groupId>
-        <artifactId>jdbi3-sqlobject</artifactId>
-        <version>3.45.1</version>
-    </dependency>
-
-    <!-- Se for usar com Spring Boot -->
-    <dependency>
-        <groupId>org.jdbi</groupId>
-        <artifactId>jdbi3-spring5</artifactId>
-        <version>3.45.1</version>
-    </dependency>
+        <!-- ============================== -->
+        <!-- openfeign -->
+        <dependency>
+            <groupId>io.github.openfeign</groupId>
+            <artifactId>feign-core</artifactId>
+            <version>11.8</version>
+        </dependency>
+        <dependency>
+            <groupId>io.github.openfeign</groupId>
+            <artifactId>feign-httpclient</artifactId>
+            <version>11.8</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-openfeign</artifactId>
+            <version>3.1.8</version>
+        </dependency>
 
 
-
-
-
-
-
-
-
-    <!-- ============================== -->
-    <!-- openfeign -->
-    <dependency>
-      <groupId>io.github.openfeign</groupId>
-      <artifactId>feign-core</artifactId>
-      <version>11.8</version>
-    </dependency>
-    <dependency>
-      <groupId>io.github.openfeign</groupId>
-      <artifactId>feign-httpclient</artifactId>
-      <version>11.8</version>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework.cloud</groupId>
-      <artifactId>spring-cloud-starter-openfeign</artifactId>
-      <version>3.1.8</version>
-    </dependency>
-
-
-
- 
     </dependencies>
 
     <build>
