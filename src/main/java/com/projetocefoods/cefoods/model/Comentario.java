@@ -1,0 +1,40 @@
+package com.projetocefoods.cefoods.model;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import jakarta.persistence.*;
+import lombok.*;
+
+import java.time.LocalDateTime;
+
+@Entity
+@Table(name = "tbcomentario")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+public class Comentario {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY) // Geração automática do ID
+    private Long id;
+
+    private String texto;
+
+    private LocalDateTime data;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "idProduto", nullable = false)
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
+    private Produto produto;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "idUsuario", nullable = false)
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
+    private Usuario usuario;
+
+    // Define a data automaticamente ao salvar o comentário
+    @PrePersist
+    public void definirDataAutomaticamente() {
+        this.data = LocalDateTime.now();
+    }
+}
