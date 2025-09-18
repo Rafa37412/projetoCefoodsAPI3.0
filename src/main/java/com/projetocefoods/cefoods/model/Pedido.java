@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @Entity
-@Table(name = "tbpedido")
+@Table(name = "tb_pedido")
 @Data
 @Builder
 @NoArgsConstructor

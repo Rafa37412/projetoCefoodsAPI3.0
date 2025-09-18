@@ -14,7 +14,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 @AllArgsConstructor
 @Builder
 @Entity
-@Table(name = "tbloja")
+@Table(name = "tb_loja")
 public class Loja {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

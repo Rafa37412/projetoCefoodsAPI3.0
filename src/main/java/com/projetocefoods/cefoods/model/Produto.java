@@ -7,7 +7,7 @@ import lombok.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "tbproduto")
+@Table(name = "tb_produto")
 @Data
 @Builder
 @NoArgsConstructor
