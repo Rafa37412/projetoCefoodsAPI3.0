@@ -15,20 +15,15 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                // Desabilita a proteção CSRF, que é comum para APIs REST stateless
-                .csrf(AbstractHttpConfigurer::disable)
-                
-                // Define as regras de autorização para os endpoints
-                .authorizeHttpRequests(authorize -> authorize
-                        // Permite requisições POST para /usuarios (para criar novos usuários)
-                        .requestMatchers(HttpMethod.POST, "/usuarios").permitAll()
-                        
-                        // Permite requisições GET para /produtos (exemplo, para listar produtos)
-                        .requestMatchers(HttpMethod.GET, "/produtos").permitAll()
-                        
-                        // Exige autenticação para qualquer outra requisição
-                        .anyRequest().authenticated()
-                );
+            // Desabilita a proteção CSRF, que é comum para APIs REST stateless
+            .csrf(AbstractHttpConfigurer::disable)
+            // Define as regras de autorização para os endpoints
+            .authorizeHttpRequests(authorize -> authorize
+                // Permite qualquer método para /usuarios e /usuarios/**
+                .requestMatchers("/usuarios", "/usuarios/**").permitAll()
+                // Exige autenticação para qualquer outra requisição
+                .anyRequest().authenticated()
+            );
         return http.build();
     }
 }
