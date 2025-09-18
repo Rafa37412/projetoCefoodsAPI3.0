@@ -1,7 +1,6 @@
 -- ============================================================
 -- 🔄 DROP TABLES (para recriar do zero sem conflito)
 -- ============================================================
--- teste
 DROP TABLE IF EXISTS tbnota_anexo CASCADE;
 DROP TABLE IF EXISTS tbnota CASCADE;
 DROP TABLE IF EXISTS tbnotificacao CASCADE;
