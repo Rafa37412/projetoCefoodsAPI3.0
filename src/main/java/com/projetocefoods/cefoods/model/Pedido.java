@@ -51,7 +51,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
-@Table(name = "tbpedido")
+@Table(name = "tb_pedido")
 @Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder
 public class Pedido {
     @Id
@@ -67,6 +67,7 @@ public class Pedido {
     private Loja loja;
 
     private String nomeCliente;
+    @Column(name = "forma_pagamento")
     private String formaPagamento;
     private Double total;
     private String status;

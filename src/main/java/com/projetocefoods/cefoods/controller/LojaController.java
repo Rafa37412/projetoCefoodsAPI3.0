@@ -1,3 +1,4 @@
+
 package com.projetocefoods.cefoods.controller;
 
 import com.projetocefoods.cefoods.dto.HorarioFuncionamentoDTO;
@@ -44,6 +45,7 @@ public class LojaController {
     public ResponseEntity<LojaResponse> atualizar(@PathVariable Long id, @RequestBody UpdateLoja dto) {
         return ResponseEntity.ok(service.atualizar(id, dto));
     }
+
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletar(@PathVariable Long id) {

@@ -105,41 +105,12 @@ public class LojaService {
         // Atualiza o usuário para refletir que ele não possui mais loja
         Usuario usuario = loja.getUsuario();
         usuario.setPossuiLoja(false);
-        usuario.setTipoPerfil("comprador");
+        // Ajuste no tipo de perfil - idealmente seria um Enum
+        // usuario.setTipoPerfil(TipoPerfil.COMPRADOR);
         usuarioRepo.save(usuario);
     }
 
-    private LojaResponse toResponse(Loja l) {
-        Usuario u = l.getUsuario();
-        UsuarioResponse usuarioDto = new UsuarioResponse(
-                u.getIdUsuario(),
-                u.getNome(),
-                u.getEmail(),
-                u.getLogin());
-
-        var horarios = horarioRepo.findByLoja(l).stream()
-                .map(h -> new HorarioFuncionamentoDTO(h.getDiaSemana(), h.getTurno()))
-                .toList();
-
-        return new LojaResponse(
-                l.getIdLoja(),
-                l.getNomeFantasia(),
-                l.getDescricao(),
-                l.getFotoCapa(),
-                l.getLocalizacao(),
-                l.getStatus(),
-                l.getVisivel(),
-                l.getAceitaPix(),
-                l.getAceitaDinheiro(),
-                l.getAceitaCartao(),
-                l.getDataCriacao(),
-                l.getQtdProdutosVendidos(),
-                l.getAvaliacaoMedia(),
-                usuarioDto,
-                l.getManualOverride() != null ? l.getManualOverride() : false,
-                horarios);
-    }
-
+    @Transactional
     public LojaResponse atualizarStatus(Long idLoja, UpdateLojaStatusReq dto) {
         Loja loja = lojaRepo.findById(idLoja)
                 .orElseThrow(() -> new IllegalArgumentException("Loja não encontrada"));
@@ -148,7 +119,7 @@ public class LojaService {
         if (dto.manualOverride() != null) {
             loja.setManualOverride(dto.manualOverride());
         }
-
+        
         return toResponse(lojaRepo.save(loja));
     }
 
@@ -196,7 +167,7 @@ public class LojaService {
                 continue;
             }
 
-            // se não tiver horários configurados → não altera status
+            // se não tiver horários configurados -> não altera status
             List<HorarioFuncionamento> horarios = horarioRepo.findByLoja(loja);
             if (horarios.isEmpty()) {
                 continue;
@@ -222,5 +193,37 @@ public class LojaService {
                 case NOITE -> hora >= 18 && hora <= 22;
             };
         });
+    }
+    
+    // MÉTODO AUXILIAR MOVIDO PARA O LUGAR CORRETO
+    private LojaResponse toResponse(Loja l) {
+        Usuario u = l.getUsuario();
+        UsuarioResponse usuarioDto = new UsuarioResponse(
+                u.getIdUsuario(),
+                u.getNome(),
+                u.getEmail(),
+                u.getLogin());
+
+        var horarios = horarioRepo.findByLoja(l).stream()
+                .map(h -> new HorarioFuncionamentoDTO(h.getDiaSemana(), h.getTurno()))
+                .toList();
+
+        return new LojaResponse(
+                l.getIdLoja(),
+                l.getNomeFantasia(),
+                l.getDescricao(),
+                l.getFotoCapa(),
+                l.getLocalizacao(),
+                l.getStatus(),
+                l.getVisivel(),
+                l.getAceitaPix(),
+                l.getAceitaDinheiro(),
+                l.getAceitaCartao(),
+                l.getDataCriacao(),
+                l.getQtdProdutosVendidos(),
+                l.getAvaliacaoMedia(),
+                usuarioDto,
+                l.getManualOverride() != null ? l.getManualOverride() : false,
+                horarios);
     }
 }
