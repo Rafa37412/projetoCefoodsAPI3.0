@@ -112,7 +112,7 @@ public class ProdutoService {
     }
 
     public List<Produto> listarPorCategoria(Integer id_categoria) {
-        return produtoRepo.findByCategoria_Id_categoria(id_categoria);
+        return produtoRepo.findByCategoria_Id(id_categoria);
     }
 
 }
