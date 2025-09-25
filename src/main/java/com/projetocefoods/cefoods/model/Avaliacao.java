@@ -13,10 +13,8 @@ public class Avaliacao {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
     private Long id;
 
-    @Column(name = "estrelas")
     private int estrelas;
 
     @ManyToOne(fetch = FetchType.LAZY)

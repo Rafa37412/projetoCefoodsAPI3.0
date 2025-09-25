@@ -22,13 +22,11 @@ public class ItemPedido {
     @JoinColumn(name = "id_produto", nullable = false)
     private Produto produto;
 
-    @Column(name = "quantidade")
     private Integer quantidade;
 
-    @Column(name = "preco_unitario")
-    private Double precoUnitario;
+    private Double preco_unitario;
 
-    @Column(name = "subtotal", insertable = false, updatable = false)
+    @Column(insertable = false, updatable = false)
     private Double subtotal;
 
 }

@@ -57,9 +57,9 @@ public class ComentarioService {
     private final NotificacaoService notificacaoService;
 
     public Comentario criar(CreateComentario dto) {
-        Produto produto = produtoRepo.findById(dto.idProduto())
+        Produto produto = produtoRepo.findById(dto.id_produto())
                 .orElseThrow(() -> new IllegalArgumentException("Produto não encontrado"));
-        Usuario usuario = usuarioRepo.findById(dto.idUsuario())
+        Usuario usuario = usuarioRepo.findById(dto.id_usuario())
                 .orElseThrow(() -> new IllegalArgumentException("Usuário não encontrado"));
 
         Comentario comentario = Comentario.builder()
@@ -78,7 +78,7 @@ public class ComentarioService {
                 produto.getLoja().getUsuario(),
                 produto.getLoja(),
                 null,
-                produto.getIdProduto(),
+                produto.getId_produto(),
                 null
         );
 

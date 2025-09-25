@@ -22,17 +22,17 @@ public class ItemPedidoService {
     private final ProdutoRepository produtoRepo;
 
     public ItemPedido criar(ItemPedidoCreate dto) {
-        Pedido pedido = pedidoRepo.findById(dto.idPedido())
+        Pedido pedido = pedidoRepo.findById(dto.id_pedido())
                 .orElseThrow(() -> new IllegalArgumentException("Pedido não encontrado"));
 
-        Produto produto = produtoRepo.findById(dto.idProduto())
+        Produto produto = produtoRepo.findById(dto.id_produto())
                 .orElseThrow(() -> new IllegalArgumentException("Produto não encontrado"));
 
         ItemPedido item = ItemPedido.builder()
                 .pedido(pedido)
                 .produto(produto)
                 .quantidade(dto.quantidade())
-                .precoUnitario(dto.precoUnitario())
+                .preco_unitario(dto.preco_unitario())
                 .build();
 
         return itemPedidoRepo.save(item);
@@ -43,7 +43,7 @@ public class ItemPedidoService {
     }
 
     public List<ItemPedido> listarPorPedido(Long idPedido) {
-        return itemPedidoRepo.findByPedidoIdPedido(idPedido);
+        return itemPedidoRepo.findByPedidoId_pedido(idPedido);
     }
 
     public ItemPedido buscarPorId(Long idPedido, Long idProduto) {
@@ -61,8 +61,8 @@ public class ItemPedidoService {
             item.setQuantidade(dto.quantidade());
         }
 
-        if (dto.precoUnitario() != null) {
-            item.setPrecoUnitario(dto.precoUnitario());
+        if (dto.preco_unitario() != null) {
+            item.setPreco_unitario(dto.preco_unitario());
         }
 
         // Não precisa calcular subtotal aqui pois será calculado na entidade

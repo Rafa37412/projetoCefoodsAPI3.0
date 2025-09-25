@@ -9,8 +9,7 @@ import lombok.*;
 public class PedidoItem {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id_pedido_item")
-    private Long idPedidoItem;
+    private Long id_pedido_item;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_pedido", nullable = false)
@@ -20,12 +19,9 @@ public class PedidoItem {
     @JoinColumn(name = "id_produto", nullable = false)
     private Produto produto;
 
-    @Column(name = "nome")
     private String nome;
     
-    @Column(name = "preco")
     private Double preco;
     
-    @Column(name = "quantidade")
     private Integer quantidade;
 }

@@ -14,8 +14,7 @@ import java.time.LocalDateTime;
 public class Carrinho {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id_carrinho")
-    private Long idCarrinho;
+    private Long id_carrinho;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_usuario", nullable = false)
@@ -26,6 +25,5 @@ public class Carrinho {
     @JoinColumn(name = "id_loja", nullable = true)
     private Loja loja; // pode ser null
 
-    @Column(name = "criado_em")
-    private LocalDateTime criadoEm;
+    private LocalDateTime criado_em;
 }

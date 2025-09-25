@@ -17,40 +17,35 @@ public class Notificacao {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
     private Long id;
 
-    @Column(name = "tipo")
     private String tipo; // e.g. ORDER_RECEIVED, LOW_STOCK, COMMENT, ORDER_STATUS
 
-    @Column(name = "titulo")
     private String titulo;
 
-    @Column(name = "mensagem", columnDefinition = "TEXT")
+    @Column(columnDefinition = "TEXT")
     private String mensagem;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_usuario_destino")
-    private Usuario usuarioDestino;
+    private Usuario usuario_destino;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_loja_destino")
-    private Loja lojaDestino;
+    private Loja loja_destino;
 
-    @Column(name = "pedido_id")
-    private Long pedidoId;
+    private Long pedido_id;
 
-    @Column(name = "produto_id")
-    private Long produtoId;
+    private Long produto_id;
 
     // Campo 'dados' corrigido (mantendo a versão com as anotações corretas)
     @JdbcTypeCode(SqlTypes.JSON)
-    @Column(name = "dados", columnDefinition = "json")
+    @Column(columnDefinition = "json")
     private String dados;
 
-    @Column(name = "lida")
+    @Builder.Default
     private Boolean lida = false;
 
-    @Column(name = "data_criacao")
-    private LocalDateTime dataCriacao = LocalDateTime.now();
+    @Builder.Default
+    private LocalDateTime data_criacao = LocalDateTime.now();
 }

@@ -6,7 +6,7 @@ public class ComentarioDTO {
     public record CreateComentario(
         String texto,
         LocalDate data,
-        Long idProduto,
-        Long idUsuario
+        Long id_produto,
+        Long id_usuario
     ) {}
 }

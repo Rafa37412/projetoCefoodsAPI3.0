@@ -18,52 +18,38 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 public class Loja {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id_loja")
-    private Long idLoja;
+    private Long id_loja;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_usuario", nullable = false)
     private Usuario usuario;
 
-    @Column(name = "nome_fantasia")
-    private String nomeFantasia;
+    private String nome_fantasia;
     
-    @Column(name = "descricao", length = 1000)
+    @Column(length = 1000)
     private String descricao;
     
-    @Column(name = "foto_capa")
-    private String fotoCapa;
+    private String foto_capa;
     
-    @Column(name = "localizacao")
     private String localizacao;
 
-    @Column(name = "status")
     private Boolean status;
 
-    @Column(name = "manual_override") // ✅ novo campo
-    private Boolean manualOverride;
+    private Boolean manual_override; // ✅ novo campo
 
-    @Column(name = "visivel")
     private Boolean visivel;
     
-    @Column(name = "aceita_pix")
-    private Boolean aceitaPix;
+    private Boolean aceita_pix;
     
-    @Column(name = "aceita_dinheiro")
-    private Boolean aceitaDinheiro;
+    private Boolean aceita_dinheiro;
     
-    @Column(name = "aceita_cartao")
-    private Boolean aceitaCartao;
+    private Boolean aceita_cartao;
 
-    @Column(name = "data_criacao")
-    private LocalDateTime dataCriacao;
+    private LocalDateTime data_criacao;
     
-    @Column(name = "qtd_produtos_vendidos")
-    private Integer qtdProdutosVendidos;
+    private Integer qtd_produtos_vendidos;
     
-    @Column(name = "avaliacao_media")
-    private Double avaliacaoMedia;
+    private Double avaliacao_media;
     
-    @Column(name = "total_pedidos")
-    private Integer totalPedidos;
+    private Integer total_pedidos;
 }

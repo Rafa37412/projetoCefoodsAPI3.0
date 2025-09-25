@@ -37,14 +37,14 @@ public class CarrinhoService {
         var items = carrinhoItemRepo.findByCarrinho(c);
 
         CarrinhoDTO dto = new CarrinhoDTO();
-        dto.idCarrinho = c.getIdCarrinho();
-        // idLoja: obtido a partir do primeiro item (se houver)
-        dto.idLoja = items.isEmpty() ? null : items.get(0).getProduto().getLoja().getIdLoja();
+        dto.id_carrinho = c.getId_carrinho();
+        // id_loja: obtido a partir do primeiro item (se houver)
+        dto.id_loja = items.isEmpty() ? null : items.get(0).getProduto().getLoja().getId_loja();
         dto.itens = items.stream().map(ci -> {
             var it = new CarrinhoDTO.Item();
-            it.produtoId = ci.getProduto().getIdProduto();
+            it.produto_id = ci.getProduto().getId_produto();
             it.nome = ci.getProduto().getNome();
-            it.precoUnit = ci.getProduto().getPreco();
+            it.preco_unit = ci.getProduto().getPreco();
             it.quantidade = ci.getQuantidade();
             it.foto = ci.getProduto().getImagem();
             return it;
@@ -54,8 +54,8 @@ public class CarrinhoService {
 
     private CarrinhoDTO emptyDTO() {
         CarrinhoDTO dto = new CarrinhoDTO();
-        dto.idCarrinho = null;
-        dto.idLoja = null;
+        dto.id_carrinho = null;
+        dto.id_loja = null;
         dto.itens = List.of();
         return dto;
     }
@@ -64,13 +64,13 @@ public class CarrinhoService {
 
     @Transactional
     public CarrinhoDTO addItem(Long idUsuario, AddItemRequest req) {
-        if (req == null || req.produtoId == null || req.quantidade == null || req.quantidade < 1)
+        if (req == null || req.produto_id == null || req.quantidade == null || req.quantidade < 1)
             throw new IllegalArgumentException("Dados inválidos para adicionar item");
 
         var usuario = usuarioRepo.findById(idUsuario)
                 .orElseThrow(() -> new IllegalArgumentException("Usuário não encontrado"));
 
-        var produto = produtoRepo.findById(req.produtoId)
+        var produto = produtoRepo.findById(req.produto_id)
                 .orElseThrow(() -> new IllegalArgumentException("Produto não encontrado"));
 
         if (produto.getEstoque() < req.quantidade)
@@ -79,14 +79,14 @@ public class CarrinhoService {
         // pega (ou cria) o carrinho do usuário — sem amarrar loja
         var carrinho = carrinhoRepo.findByUsuario(usuario)
                 .orElseGet(() -> carrinhoRepo.save(
-                        Carrinho.builder().usuario(usuario).criadoEm(LocalDateTime.now()).build()
+                        Carrinho.builder().usuario(usuario).criado_em(LocalDateTime.now()).build()
                 ));
 
         // Regra da loja: se já tem item, todos devem ser da mesma loja do primeiro item
         var itensAtuais = carrinhoItemRepo.findByCarrinho(carrinho);
         if (!itensAtuais.isEmpty()) {
-            var idLojaCarrinho = itensAtuais.get(0).getProduto().getLoja().getIdLoja();
-            var idLojaNovo = produto.getLoja().getIdLoja();
+            var idLojaCarrinho = itensAtuais.get(0).getProduto().getLoja().getId_loja();
+            var idLojaNovo = produto.getLoja().getId_loja();
             if (!idLojaCarrinho.equals(idLojaNovo)) {
                 throw new IllegalArgumentException("O carrinho já contém itens de outra loja. Esvazie o carrinho para trocar de loja.");
             }
@@ -223,8 +223,8 @@ public class CarrinhoService {
                 .sum();
 
         var pedido = pedidoService.criarPedido(
-                usuario, loja, usuario.getNome(), req.formaPagamento,
-                total, req.horarioRetirada, pedidoItems
+                usuario, loja, usuario.getNome(), req.forma_pagamento,
+                total, req.horario_retirada, pedidoItems
         );
 
         // “Finaliza” carrinho: limpa itens e deleta o carrinho para nascer outro
@@ -234,7 +234,7 @@ public class CarrinhoService {
         CheckoutResponse resp = new CheckoutResponse();
         resp.success = true;
         resp.message = "Pedido criado com sucesso";
-        resp.idPedido = pedido.getIdPedido();
+        resp.id_pedido = pedido.getId_pedido();
         return resp;
     }
 }

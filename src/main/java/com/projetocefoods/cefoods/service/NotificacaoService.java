@@ -28,20 +28,20 @@ public class NotificacaoService {
                 .tipo(tipo)
                 .titulo(titulo)
                 .mensagem(mensagem)
-                .usuarioDestino(usuario)
-                .lojaDestino(loja)
-                .pedidoId(pedidoId)
-                .produtoId(produtoId)
+                .usuario_destino(usuario)
+                .loja_destino(loja)
+                .pedido_id(pedidoId)
+                .produto_id(produtoId)
                 .dados(dadosJson)
                 .lida(false)
-                .dataCriacao(LocalDateTime.now())
+                .data_criacao(LocalDateTime.now())
                 .build();
 
         notifRepo.save(n);
 
         // envio realtime
-        if (usuario != null && usuario.getIdUsuario() != null) {
-            String dest = "/topic/notifications/user-" + usuario.getIdUsuario();
+        if (usuario != null && usuario.getId_usuario() != null) {
+            String dest = "/topic/notifications/user-" + usuario.getId_usuario();
             simp.convertAndSend(dest, toDto(n));
         }
 
@@ -49,7 +49,7 @@ public class NotificacaoService {
     }
 
     public List<Notificacao> listarPorUsuario(Long idUsuario) {
-        return notifRepo.findByUsuarioDestinoIdUsuarioOrderByDataCriacaoDesc(idUsuario);
+        return notifRepo.findByUsuario_destinoId_usuarioOrderByData_criacaoDesc(idUsuario);
     }
 
     public Notificacao marcarComoLida(Long id) {
@@ -66,9 +66,9 @@ public class NotificacaoService {
         dto.put("titulo", n.getTitulo());
         dto.put("mensagem", n.getMensagem());
         dto.put("lida", n.getLida());
-        dto.put("pedidoId", n.getPedidoId());
-        dto.put("produtoId", n.getProdutoId());
-        dto.put("dataCriacao", n.getDataCriacao());
+        dto.put("pedidoId", n.getPedido_id());
+        dto.put("produtoId", n.getProduto_id());
+        dto.put("dataCriacao", n.getData_criacao());
         // opcional: cor/ícone baseados no tipo
         switch (n.getTipo()) {
             case "ORDER_RECEIVED" -> dto.put("color", "blue");

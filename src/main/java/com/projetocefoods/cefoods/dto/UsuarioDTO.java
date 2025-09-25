@@ -11,12 +11,12 @@ public class UsuarioDTO {
             @NotBlank String senha,
             String telefone,
             String cpf,
-            LocalDate dataNascimento,
+            LocalDate data_nascimento,
 
-            @NotBlank String tipoUsuario, // Ex: "aluno", "professor", etc.
-            @NotBlank String tipoPerfil,  // Ex: "admin", "cliente", "vendedor"
+            @NotBlank String tipo_usuario, // Ex: "aluno", "professor", etc.
+            @NotBlank String tipo_perfil,  // Ex: "admin", "cliente", "vendedor"
 
-            String chavePix,
-            String fotoPerfil
+            String chave_pix,
+            String foto_perfil
     ) {}
 }

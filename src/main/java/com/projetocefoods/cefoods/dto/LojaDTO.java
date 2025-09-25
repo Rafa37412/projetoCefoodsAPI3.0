@@ -8,40 +8,40 @@ import jakarta.validation.constraints.NotNull;
 public class LojaDTO {
 
     public record CreateLoja(
-            @NotNull Long idUsuario,
-            @NotBlank String nomeFantasia,
+            @NotNull Long id_usuario,
+            @NotBlank String nome_fantasia,
             String descricao,
-            String fotoCapa,
+            String foto_capa,
             String localizacao,
-            String horarioAbertura,
-            String horarioFechamento,
+            String horario_abertura,
+            String horario_fechamento,
             Boolean status,
             Boolean visivel,
-            Boolean aceitaPix,
-            Boolean aceitaDinheiro,
-            Boolean aceitaCartao,
+            Boolean aceita_pix,
+            Boolean aceita_dinheiro,
+            Boolean aceita_cartao,
 
             // ✅ Novo campo para turnos abertos
-            List<HorarioFuncionamentoDTO> horariosFuncionamento) {
+            List<HorarioFuncionamentoDTO> horarios_funcionamento) {
     }
 
     public record UpdateLoja(
-            String nomeFantasia,
+            String nome_fantasia,
             String descricao,
-            String fotoCapa,
+            String foto_capa,
             String localizacao,
-            String horarioAbertura,
-            String horarioFechamento,
+            String horario_abertura,
+            String horario_fechamento,
             Boolean status,
             Boolean visivel,
-            Boolean aceitaPix,
-            Boolean aceitaDinheiro,
-            Boolean aceitaCartao) {
+            Boolean aceita_pix,
+            Boolean aceita_dinheiro,
+            Boolean aceita_cartao) {
     }
 
     public record UpdateLojaStatusReq(
         @NotNull Boolean status,
-        Boolean manualOverride // ✅ permite o toggle manual
+        Boolean manual_override // ✅ permite o toggle manual
 ) {}
 
 }

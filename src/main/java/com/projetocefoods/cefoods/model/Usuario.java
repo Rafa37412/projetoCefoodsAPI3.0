@@ -18,58 +18,40 @@ public class Usuario {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id_usuario")
-    private Long idUsuario;
+    private Long id_usuario;
 
-    @Column(name = "nome")
     private String nome;
 
-    @Column(name = "login")
     private String login;
 
-    @Column(name = "email")
     private String email;
 
-    @Column(name = "senha")
     private String senha;
 
-    @Column(name = "telefone")
     private String telefone;
 
-    @Column(name = "cpf")
     private String cpf;
 
-    @Column(name = "data_nascimento")
-    private LocalDate dataNascimento;
+    private LocalDate data_nascimento;
 
-    @Column(name = "tipo_usuario")
-    private String tipoUsuario;
+    private String tipo_usuario;
 
-    @Column(name = "tipo_perfil")
-    private String tipoPerfil;
+    private String tipo_perfil;
 
-    @Column(name = "chave_pix")
-    private String chavePix;
+    private String chave_pix;
 
-    @Column(name = "foto_perfil")
-    private String fotoPerfil;
+    private String foto_perfil;
 
-    @Column(name = "data_cadastro")
-    private LocalDateTime dataCadastro;
+    private LocalDateTime data_cadastro;
 
-    @Column(name = "ativo")
     private Boolean ativo;
 
-    @Column(name = "ultimo_acesso")
-    private LocalDateTime ultimoAcesso;
+    private LocalDateTime ultimo_acesso;
 
-    @Column(name = "email_verificado")
-    private Boolean emailVerificado;
+    private Boolean email_verificado;
 
-    @Column(name = "token_recuperacao")
-    private String tokenRecuperacao;
+    private String token_recuperacao;
 
-    @Column(name = "possui_loja")
-    private Boolean possuiLoja;
+    private Boolean possui_loja;
 
 }

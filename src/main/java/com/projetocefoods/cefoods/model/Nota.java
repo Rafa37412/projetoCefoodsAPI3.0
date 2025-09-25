@@ -20,17 +20,14 @@ public class Nota {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id_nota")
-    private Long idNota;
+    private Long id_nota;
 
-    @Column(name = "titulo")
     private String titulo;
 
-    @Column(name = "texto", columnDefinition = "TEXT")
+    @Column(columnDefinition = "TEXT")
     private String texto;
 
-    @Column(name = "data_criacao")
-    private LocalDateTime dataCriacao;
+    private LocalDateTime data_criacao;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_usuario", nullable = false)
@@ -48,7 +45,7 @@ public class Nota {
 
     @PrePersist
     public void prePersist() {
-        if (this.dataCriacao == null)
-            this.dataCriacao = LocalDateTime.now();
+        if (this.data_criacao == null)
+            this.data_criacao = LocalDateTime.now();
     }
 }

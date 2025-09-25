@@ -56,8 +56,7 @@ import java.util.List;
 public class Pedido {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id_pedido")
-    private Long idPedido;
+    private Long id_pedido;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_usuario", nullable = false)
@@ -67,23 +66,17 @@ public class Pedido {
     @JoinColumn(name = "id_loja", nullable = false)
     private Loja loja;
 
-    @Column(name = "nome_cliente")
-    private String nomeCliente;
+    private String nome_cliente;
     
-    @Column(name = "forma_pagamento")
-    private String formaPagamento;
+    private String forma_pagamento;
     
-    @Column(name = "total")
     private Double total;
     
-    @Column(name = "status")
     private String status;
     
-    @Column(name = "data_pedido")
-    private LocalDateTime dataPedido;
+    private LocalDateTime data_pedido;
     
-    @Column(name = "horario_retirada")
-    private String horarioRetirada;
+    private String horario_retirada;
 
     @OneToMany(mappedBy = "pedido", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<PedidoItem> itens;

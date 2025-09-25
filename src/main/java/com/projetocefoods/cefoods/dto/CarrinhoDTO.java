@@ -4,14 +4,14 @@ import java.util.List;
 
 public class CarrinhoDTO {
     public static class Item {
-        public Long produtoId;
+        public Long produto_id;
         public String nome;
-        public Double precoUnit;
+        public Double preco_unit;
         public Integer quantidade;
         public String foto;
-        // NÃO precisa de idLoja aqui
+        // NÃO precisa de id_loja aqui
     }
-    public Long idCarrinho;
-    public Long idLoja; // importante: id da loja do carrinho (null quando vazio)
+    public Long id_carrinho;
+    public Long id_loja; // importante: id da loja do carrinho (null quando vazio)
     public List<Item> itens;
 }

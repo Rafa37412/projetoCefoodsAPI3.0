@@ -25,10 +25,10 @@ public class ProdutoService {
     private final NotificacaoService notificacaoService;
 
     public Produto criar(CreateProduto dto) {
-        Loja loja = lojaRepo.findById(dto.idLoja())
+        Loja loja = lojaRepo.findById(dto.id_loja())
                 .orElseThrow(() -> new IllegalArgumentException("Loja não encontrada"));
 
-        Categoria categoria = categoriaRepo.findById(dto.idCategoria())
+        Categoria categoria = categoriaRepo.findById(dto.id_categoria())
                 .orElseThrow(() -> new IllegalArgumentException("Categoria não encontrada"));
 
         Produto produto = Produto.builder()
@@ -39,11 +39,11 @@ public class ProdutoService {
                 .preco(dto.preco())
                 .imagem(dto.imagem())
                 .estoque(dto.estoque() != null ? dto.estoque() : 0)
-                .estoqueMinimo(dto.estoqueMinimo() != null ? dto.estoqueMinimo() : 0)
+                .estoque_minimo(dto.estoque_minimo() != null ? dto.estoque_minimo() : 0)
                 .disponivel(dto.disponivel() != null ? dto.disponivel() : true)
-                .dataCadastro(LocalDateTime.now())
-                .vezesVendido(0)
-                .avaliacaoMedia(0.0)
+                .data_cadastro(LocalDateTime.now())
+                .vezes_vendido(0)
+                .avaliacao_media(0.0)
                 .build();
 
         return produtoRepo.save(produto);
@@ -61,13 +61,13 @@ public class ProdutoService {
         Produto produto = produtoRepo.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Produto não encontrado"));
 
-        Loja loja = lojaRepo.findById(dto.idLoja())
+        Loja loja = lojaRepo.findById(dto.id_loja())
                 .orElseThrow(() -> new IllegalArgumentException("Loja não encontrada"));
 
-        Categoria categoria = categoriaRepo.findById(dto.idCategoria())
+        Categoria categoria = categoriaRepo.findById(dto.id_categoria())
                 .orElseThrow(() -> new IllegalArgumentException("Categoria não encontrada"));
 
-        produto.setIdProduto(id);
+        produto.setId_produto(id);
         produto.setLoja(loja);
         produto.setCategoria(categoria);
         produto.setNome(dto.nome());
@@ -75,12 +75,12 @@ public class ProdutoService {
         produto.setPreco(dto.preco());
         produto.setImagem(dto.imagem());
         produto.setEstoque(dto.estoque() != null ? dto.estoque() : 0);
-        produto.setEstoqueMinimo(dto.estoqueMinimo() != null ? dto.estoqueMinimo() : 0);
+        produto.setEstoque_minimo(dto.estoque_minimo() != null ? dto.estoque_minimo() : 0);
         produto.setDisponivel(dto.disponivel() != null ? dto.disponivel() : true);
 
 
 
-        if (produto.getEstoque() <= produto.getEstoqueMinimo()) {
+        if (produto.getEstoque() <= produto.getEstoque_minimo()) {
             Usuario donoLoja = produto.getLoja().getUsuario();
             notificacaoService.criarNotificacaoParaUsuario(
                     "LOW_STOCK",
@@ -89,7 +89,7 @@ public class ProdutoService {
                     donoLoja,
                     produto.getLoja(),
                     null,
-                    produto.getIdProduto(),
+                    produto.getId_produto(),
                     null);
         }
 
@@ -104,15 +104,15 @@ public class ProdutoService {
         produtoRepo.deleteById(id);
     }
 
-    public List<Produto> listarPorLoja(Long idLoja) {
-        Loja loja = lojaRepo.findById(idLoja)
+    public List<Produto> listarPorLoja(Long id_loja) {
+        Loja loja = lojaRepo.findById(id_loja)
                 .orElseThrow(() -> new IllegalArgumentException("Loja não encontrada"));
 
         return produtoRepo.findByLoja(loja);
     }
 
-    public List<Produto> listarPorCategoria(Integer idCategoria) {
-        return produtoRepo.findByCategoria_IdCategoria(idCategoria);
+    public List<Produto> listarPorCategoria(Integer id_categoria) {
+        return produtoRepo.findByCategoria_Id_categoria(id_categoria);
     }
 
 }

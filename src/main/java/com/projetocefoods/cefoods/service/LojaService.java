@@ -28,36 +28,36 @@ public class LojaService {
     private final HorarioFuncionamentoRepository horarioRepo;
 
     public LojaResponse criar(CreateLoja dto) {
-        if (dto.idUsuario() == null) {
-            throw new IllegalArgumentException("idUsuario não pode ser null");
+        if (dto.id_usuario() == null) {
+            throw new IllegalArgumentException("id_usuario não pode ser null");
         }
 
-        Usuario u = usuarioRepo.findById(dto.idUsuario())
+        Usuario u = usuarioRepo.findById(dto.id_usuario())
                 .orElseThrow(() -> new IllegalArgumentException("Usuário não encontrado"));
 
         Loja novaLoja = Loja.builder()
                 .usuario(u)
-                .nomeFantasia(dto.nomeFantasia())
+                .nome_fantasia(dto.nome_fantasia())
                 .descricao(dto.descricao())
-                .fotoCapa(dto.fotoCapa())
+                .foto_capa(dto.foto_capa())
                 .localizacao(dto.localizacao())
                 .status(dto.status() != null ? dto.status() : false)
-                .manualOverride(false) // iniciar sem override
+                .manual_override(false) // iniciar sem override
                 .visivel(dto.visivel() != null ? dto.visivel() : true)
-                .aceitaPix(Boolean.TRUE.equals(dto.aceitaPix()))
-                .aceitaDinheiro(Boolean.TRUE.equals(dto.aceitaDinheiro()))
-                .aceitaCartao(Boolean.TRUE.equals(dto.aceitaCartao()))
-                .dataCriacao(LocalDateTime.now())
-                .qtdProdutosVendidos(0)
-                .avaliacaoMedia(0.0)
+                .aceita_pix(Boolean.TRUE.equals(dto.aceita_pix()))
+                .aceita_dinheiro(Boolean.TRUE.equals(dto.aceita_dinheiro()))
+                .aceita_cartao(Boolean.TRUE.equals(dto.aceita_cartao()))
+                .data_criacao(LocalDateTime.now())
+                .qtd_produtos_vendidos(0)
+                .avaliacao_media(0.0)
                 .build();
 
         Loja lojaSalva = lojaRepo.save(novaLoja);
 
-        if (dto.horariosFuncionamento() != null && !dto.horariosFuncionamento().isEmpty()) {
-            var horarios = dto.horariosFuncionamento().stream().map(h -> HorarioFuncionamento.builder()
+        if (dto.horarios_funcionamento() != null && !dto.horarios_funcionamento().isEmpty()) {
+            var horarios = dto.horarios_funcionamento().stream().map(h -> HorarioFuncionamento.builder()
                     .loja(lojaSalva)
-                    .diaSemana(h.diaSemana())
+                    .dia_semana(h.diaSemana())
                     .turno(h.turno())
                     .build()).toList();
 
@@ -79,15 +79,15 @@ public class LojaService {
     public LojaResponse atualizar(Long id, UpdateLoja dto) {
         Loja loja = lojaRepo.findById(id).orElseThrow();
 
-        loja.setNomeFantasia(dto.nomeFantasia());
+        loja.setNome_fantasia(dto.nome_fantasia());
         loja.setDescricao(dto.descricao());
-        loja.setFotoCapa(dto.fotoCapa());
+        loja.setFoto_capa(dto.foto_capa());
         loja.setLocalizacao(dto.localizacao());
         loja.setStatus(dto.status());
         loja.setVisivel(dto.visivel());
-        loja.setAceitaPix(dto.aceitaPix());
-        loja.setAceitaDinheiro(dto.aceitaDinheiro());
-        loja.setAceitaCartao(dto.aceitaCartao());
+        loja.setAceita_pix(dto.aceita_pix());
+        loja.setAceita_dinheiro(dto.aceita_dinheiro());
+        loja.setAceita_cartao(dto.aceita_cartao());
 
         return toResponse(lojaRepo.save(loja));
     }
@@ -104,9 +104,9 @@ public class LojaService {
 
         // Atualiza o usuário para refletir que ele não possui mais loja
         Usuario usuario = loja.getUsuario();
-        usuario.setPossuiLoja(false);
+        usuario.setPossui_loja(false);
         // Ajuste no tipo de perfil - idealmente seria um Enum
-        // usuario.setTipoPerfil(TipoPerfil.COMPRADOR);
+        // usuario.setTipo_perfil(TipoPerfil.COMPRADOR);
         usuarioRepo.save(usuario);
     }
 
@@ -116,8 +116,8 @@ public class LojaService {
                 .orElseThrow(() -> new IllegalArgumentException("Loja não encontrada"));
 
         loja.setStatus(dto.status());
-        if (dto.manualOverride() != null) {
-            loja.setManualOverride(dto.manualOverride());
+        if (dto.manual_override() != null) {
+            loja.setManual_override(dto.manual_override());
         }
         
         return toResponse(lojaRepo.save(loja));
@@ -128,7 +128,7 @@ public class LojaService {
                 .orElseThrow(() -> new IllegalArgumentException("Loja não encontrada"));
 
         return horarioRepo.findByLoja(loja).stream()
-                .map(h -> new HorarioFuncionamentoDTO(h.getDiaSemana(), h.getTurno()))
+                .map(h -> new HorarioFuncionamentoDTO(h.getDia_semana(), h.getTurno()))
                 .toList();
     }
 
@@ -141,7 +141,7 @@ public class LojaService {
         if (novosHorarios != null && !novosHorarios.isEmpty()) {
             var horarios = novosHorarios.stream().map(h -> HorarioFuncionamento.builder()
                     .loja(loja)
-                    .diaSemana(h.diaSemana())
+                    .dia_semana(h.diaSemana())
                     .turno(h.turno())
                     .build()).toList();
 
@@ -163,7 +163,7 @@ public class LojaService {
 
         for (Loja loja : lojas) {
             // se o dono fechou/abriu manualmente, respeitamos (override)
-            if (Boolean.TRUE.equals(loja.getManualOverride())) {
+            if (Boolean.TRUE.equals(loja.getManual_override())) {
                 continue;
             }
 
@@ -185,7 +185,7 @@ public class LojaService {
         var dia = agora.getDayOfWeek().name(); // DOMINGO, SEGUNDA, etc.
 
         return horarios.stream().anyMatch(h -> {
-            if (!h.getDiaSemana().name().equalsIgnoreCase(dia)) return false;
+            if (!h.getDia_semana().name().equalsIgnoreCase(dia)) return false;
 
             return switch (h.getTurno()) {
                 case MANHA -> hora >= 7 && hora < 12;
@@ -199,31 +199,31 @@ public class LojaService {
     private LojaResponse toResponse(Loja l) {
         Usuario u = l.getUsuario();
         UsuarioResponse usuarioDto = new UsuarioResponse(
-                u.getIdUsuario(),
+                u.getId_usuario(),
                 u.getNome(),
                 u.getEmail(),
                 u.getLogin());
 
         var horarios = horarioRepo.findByLoja(l).stream()
-                .map(h -> new HorarioFuncionamentoDTO(h.getDiaSemana(), h.getTurno()))
+                .map(h -> new HorarioFuncionamentoDTO(h.getDia_semana(), h.getTurno()))
                 .toList();
 
         return new LojaResponse(
-                l.getIdLoja(),
-                l.getNomeFantasia(),
+                l.getId_loja(),
+                l.getNome_fantasia(),
                 l.getDescricao(),
-                l.getFotoCapa(),
+                l.getFoto_capa(),
                 l.getLocalizacao(),
                 l.getStatus(),
                 l.getVisivel(),
-                l.getAceitaPix(),
-                l.getAceitaDinheiro(),
-                l.getAceitaCartao(),
-                l.getDataCriacao(),
-                l.getQtdProdutosVendidos(),
-                l.getAvaliacaoMedia(),
+                l.getAceita_pix(),
+                l.getAceita_dinheiro(),
+                l.getAceita_cartao(),
+                l.getData_criacao(),
+                l.getQtd_produtos_vendidos(),
+                l.getAvaliacao_media(),
                 usuarioDto,
-                l.getManualOverride() != null ? l.getManualOverride() : false,
+                l.getManual_override() != null ? l.getManual_override() : false,
                 horarios);
     }
 }

@@ -13,21 +13,17 @@ public class Anexo {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id_anexo")
-    private Long idAnexo;
+    private Long id_anexo;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_nota", nullable = false)
     @JsonIgnore
     private Nota nota;
 
-    @Column(name = "nome_arquivo")
-    private String nomeArquivo;
+    private String nome_arquivo;
     
-    @Column(name = "tipo")
     private String tipo;
     
-    @Column(name = "tamanho")
     private Long tamanho;
 
     @Lob

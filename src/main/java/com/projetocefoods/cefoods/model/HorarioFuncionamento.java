@@ -14,18 +14,17 @@ public class HorarioFuncionamento {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id_horario")
-    private Long idHorario;
+    private Long id_horario;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_loja", nullable = false)
     private Loja loja;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "dia_semana", nullable = false)
-    private DiaSemana diaSemana;
+    @Column(nullable = false)
+    private DiaSemana dia_semana;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "turno", nullable = false)
+    @Column(nullable = false)
     private Turno turno;
 }

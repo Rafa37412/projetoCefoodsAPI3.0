@@ -52,30 +52,30 @@ public class NotaController {
     @GetMapping("/{idNota}/anexos/{idAnexo}")
     public ResponseEntity<byte[]> downloadAnexo(@PathVariable Long idNota, @PathVariable Long idAnexo) {
         Anexo a = notaService.buscarAnexo(idAnexo);
-        if (!a.getNota().getIdNota().equals(idNota)) {
+        if (!a.getNota().getId_nota().equals(idNota)) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(
                 MediaType.parseMediaType(a.getTipo() == null ? "application/octet-stream" : a.getTipo()));
-        headers.setContentDisposition(ContentDisposition.builder("attachment").filename(a.getNomeArquivo()).build());
+        headers.setContentDisposition(ContentDisposition.builder("attachment").filename(a.getNome_arquivo()).build());
         return new ResponseEntity<>(a.getDados(), headers, HttpStatus.OK);
     }
 
     private NotaDTO.NotaResponse toResponse(Nota n) {
         List<NotaDTO.AnexoResponse> anexos = n.getAnexos() == null ? List.of()
                 : n.getAnexos().stream()
-                        .map(a -> new NotaDTO.AnexoResponse(a.getIdAnexo(), a.getNomeArquivo(), a.getTipo(),
+                        .map(a -> new NotaDTO.AnexoResponse(a.getId_anexo(), a.getNome_arquivo(), a.getTipo(),
                                 a.getTamanho()))
                         .collect(Collectors.toList());
 
         return new NotaDTO.NotaResponse(
-                n.getIdNota(),
+                n.getId_nota(),
                 n.getTitulo(),
                 n.getTexto(),
-                n.getDataCriacao(),
-                n.getUsuario() != null ? n.getUsuario().getIdUsuario() : null,
-                n.getLoja() != null ? n.getLoja().getIdLoja() : null,
+                n.getData_criacao(),
+                n.getUsuario() != null ? n.getUsuario().getId_usuario() : null,
+                n.getLoja() != null ? n.getLoja().getId_loja() : null,
                 anexos);
     }
 

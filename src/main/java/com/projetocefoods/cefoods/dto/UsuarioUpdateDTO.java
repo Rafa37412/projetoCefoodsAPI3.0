@@ -16,16 +16,16 @@ public class UsuarioUpdateDTO {
     private String senha;
     private String telefone;
     private String cpf;
-    private LocalDate dataNascimento;
-    private String tipoUsuario;
-    private String tipoPerfil;
-    private String chavePix;
-    private String fotoPerfil;
+    private LocalDate data_nascimento;
+    private String tipo_usuario;
+    private String tipo_perfil;
+    private String chave_pix;
+    private String foto_perfil;
     private Boolean ativo;
-    private Boolean emailVerificado;
-    private String tokenRecuperacao;
-    private LocalDateTime ultimoAcesso;
-    private Boolean possuiLoja;
+    private Boolean email_verificado;
+    private String token_recuperacao;
+    private LocalDateTime ultimo_acesso;
+    private Boolean possui_loja;
 
     // getters e setters (pode usar Lombok @Getter @Setter também)
 }

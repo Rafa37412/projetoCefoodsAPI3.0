@@ -37,7 +37,7 @@ public class NotaService {
                 .texto(texto)
                 .usuario(u)
                 .loja(l)
-                .dataCriacao(LocalDateTime.now())
+                .data_criacao(LocalDateTime.now())
                 .anexos(new java.util.ArrayList<>()) // garante que não será null
                 .build();
 
@@ -50,7 +50,7 @@ public class NotaService {
 
                 Anexo a = Anexo.builder()
                         .nota(salvo)
-                        .nomeArquivo(f.getOriginalFilename())
+                        .nome_arquivo(f.getOriginalFilename())
                         .tipo(f.getContentType())
                         .tamanho(f.getSize())
                         .dados(f.getBytes())
@@ -68,7 +68,7 @@ public class NotaService {
     }
 
     public List<Nota> listarPorLoja(Long idLoja) {
-        return notaRepo.findByLojaIdLojaOrderByDataCriacaoDesc(idLoja);
+        return notaRepo.findByLojaId_lojaOrderByData_criacaoDesc(idLoja);
     }
 
     public Nota buscarPorId(Long id) {
@@ -104,7 +104,7 @@ public class NotaService {
 
                 Anexo a = Anexo.builder()
                         .nota(nota)
-                        .nomeArquivo(f.getOriginalFilename())
+                        .nome_arquivo(f.getOriginalFilename())
                         .tipo(f.getContentType())
                         .tamanho(f.getSize())
                         .dados(f.getBytes())

@@ -16,13 +16,10 @@ public class Comentario {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY) // Geração automática do ID
-    @Column(name = "id")
     private Long id;
 
-    @Column(name = "texto")
     private String texto;
 
-    @Column(name = "data")
     private LocalDateTime data;
 
     @ManyToOne(fetch = FetchType.LAZY)

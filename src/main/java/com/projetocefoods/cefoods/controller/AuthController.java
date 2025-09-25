@@ -22,24 +22,24 @@ public class AuthController {
                 .map(u -> {
                     if (u.getSenha().equals(req.senha())) {
                         LoginResponse response = new LoginResponse(
-                                u.getIdUsuario(),
+                                u.getId_usuario(),
                                 u.getNome(),
                                 null, // sobrenome (se existir)
                                 u.getLogin(),
                                 u.getEmail(),
                                 u.getTelefone(),
                                 u.getCpf(),
-                                u.getDataNascimento() != null ? u.getDataNascimento().toString() : null,
-                                u.getTipoUsuario(),
-                                u.getTipoPerfil(),
-                                null, // possuiLoja (se implementar)
-                                u.getChavePix(),
-                                u.getFotoPerfil(),
-                                u.getDataCadastro() != null ? u.getDataCadastro().toString() : null,
+                                u.getData_nascimento() != null ? u.getData_nascimento().toString() : null,
+                                u.getTipo_usuario(),
+                                u.getTipo_perfil(),
+                                null, // possui_loja (se implementar)
+                                u.getChave_pix(),
+                                u.getFoto_perfil(),
+                                u.getData_cadastro() != null ? u.getData_cadastro().toString() : null,
                                 u.getAtivo(),
-                                u.getUltimoAcesso() != null ? u.getUltimoAcesso().toString() : null,
-                                u.getEmailVerificado(),
-                                u.getTokenRecuperacao());
+                                u.getUltimo_acesso() != null ? u.getUltimo_acesso().toString() : null,
+                                u.getEmail_verificado(),
+                                u.getToken_recuperacao());
                         return ResponseEntity.ok(response);
                     } else {
                         return ResponseEntity.status(401).body("Login ou senha inválidos");

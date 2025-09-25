@@ -22,7 +22,7 @@ public class LojaController {
 
     @PostMapping
     public ResponseEntity<LojaResponse> criar(@RequestBody CreateLoja dto) {
-        System.out.println("Recebido CreateLoja no backend: idUsuario=" + dto.idUsuario() + ", status=" + dto.status());
+        System.out.println("Recebido CreateLoja no backend: id_usuario=" + dto.id_usuario() + ", status=" + dto.status());
         return ResponseEntity.ok(service.criar(dto));
     }
 

@@ -23,14 +23,14 @@ public class UsuarioService {
                 .senha(dto.senha()) // HASH é recomendado
                 .telefone(dto.telefone())
                 .cpf(dto.cpf())
-                .dataNascimento(dto.dataNascimento())
-                .tipoUsuario(dto.tipoUsuario())
-                .tipoPerfil(dto.tipoPerfil())
-                .chavePix(dto.chavePix())
-                .fotoPerfil(dto.fotoPerfil())
-                .dataCadastro(LocalDateTime.now())
+                .data_nascimento(dto.data_nascimento())
+                .tipo_usuario(dto.tipo_usuario())
+                .tipo_perfil(dto.tipo_perfil())
+                .chave_pix(dto.chave_pix())
+                .foto_perfil(dto.foto_perfil())
+                .data_cadastro(LocalDateTime.now())
                 .ativo(true)
-                .emailVerificado(false)
+                .email_verificado(false)
                 .build();
 
         return repo.save(usuario);

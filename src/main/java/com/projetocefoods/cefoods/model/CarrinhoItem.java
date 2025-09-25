@@ -9,8 +9,7 @@ import lombok.*;
 public class CarrinhoItem {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id_item")
-    private Long idItem;
+    private Long id_item;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_carrinho", nullable = false)
@@ -20,6 +19,5 @@ public class CarrinhoItem {
     @JoinColumn(name = "id_produto", nullable = false)
     private Produto produto;
 
-    @Column(name = "quantidade")
     private Integer quantidade;
 }

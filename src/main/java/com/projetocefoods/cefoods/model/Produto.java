@@ -17,8 +17,7 @@ public class Produto {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id_produto")
-    private Long idProduto;
+    private Long id_produto;
 
     @ManyToOne
     @JoinColumn(name = "id_loja", nullable = false)
@@ -29,34 +28,25 @@ public class Produto {
     @JoinColumn(name = "id_categoria", nullable = false)
     private Categoria categoria;
 
-    @Column(name = "nome")
     private String nome;
     
-    @Column(name = "descricao")
     private String descricao;
     
-    @Column(name = "preco")
     private Double preco;
     
-    @Column(name = "imagem")
     private String imagem;
     
-    @Column(name = "estoque")
     private Integer estoque;
     
-    @Column(name = "estoque_minimo")
-    private Integer estoqueMinimo;
+    private Integer estoque_minimo;
     
-    @Column(name = "disponivel")
     private Boolean disponivel;
     
-    @Column(name = "data_cadastro")
-    private LocalDateTime dataCadastro;
+    private LocalDateTime data_cadastro;
     
-    @Column(name = "vezes_vendido")
-    private Integer vezesVendido;
+    private Integer vezes_vendido;
 
-    @Column(name = "avaliacao_media")
-    private Double avaliacaoMedia = 0.0;
+    @Builder.Default
+    private Double avaliacao_media = 0.0;
 
 }

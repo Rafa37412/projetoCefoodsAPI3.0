@@ -3,23 +3,23 @@ package com.projetocefoods.cefoods.dto;
 public class ItemPedidoDTO {
 
     public record ItemPedidoCreate(
-            Long idPedido,
-            Long idProduto,
+            Long id_pedido,
+            Long id_produto,
             Integer quantidade,
-            Double precoUnitario) {
+            Double preco_unitario) {
     }
 
     public record ItemPedidoResponse(
-            Long idPedido,
-            Long idProduto,
-            String nomeProduto, // 🔹 novo campo
+            Long id_pedido,
+            Long id_produto,
+            String nome_produto, // 🔹 novo campo
             Integer quantidade,
-            Double precoUnitario,
+            Double preco_unitario,
             Double subtotal) {
     }
 
     public record ItemPedidoUpdate(
             Integer quantidade,
-            Double precoUnitario) {
+            Double preco_unitario) {
     }
 }

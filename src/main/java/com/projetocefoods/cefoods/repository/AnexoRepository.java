@@ -6,5 +6,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface AnexoRepository extends JpaRepository<Anexo, Long> {
-    List<Anexo> findByNotaIdNota(Long idNota);
+    List<Anexo> findByNotaId_nota(Long id_nota);
 }

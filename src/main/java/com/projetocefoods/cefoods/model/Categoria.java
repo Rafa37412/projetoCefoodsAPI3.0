@@ -14,16 +14,12 @@ public class Categoria {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id_categoria")
-    private Long idCategoria;
+    private Long id_categoria;
 
-    @Column(name = "nome")
     private String nome;
 
-    @Column(name = "descricao")
     private String descricao;
 
-    @Column(name = "icone")
     private String icone;
 
     // ➤ Nenhum relacionamento com Produto

@@ -8,24 +8,24 @@ public class NotaDTO {
     public record CreateNota(
         String titulo,
         String texto,
-        Long idUsuario,
-        Long idLoja
+        Long id_usuario,
+        Long id_loja
     ) {}
 
     public record AnexoResponse(
-        Long idAnexo,
-        String nomeArquivo,
+        Long id_anexo,
+        String nome_arquivo,
         String tipo,
         Long tamanho
     ) {}
 
     public record NotaResponse(
-        Long idNota,
+        Long id_nota,
         String titulo,
         String texto,
-        LocalDateTime dataCriacao,
-        Long idUsuario,
-        Long idLoja,
+        LocalDateTime data_criacao,
+        Long id_usuario,
+        Long id_loja,
         List<AnexoResponse> anexos
     ) {}
 }

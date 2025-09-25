@@ -5,14 +5,14 @@ import jakarta.validation.constraints.NotNull;
 
 public class ProdutoDTO {
     public record CreateProduto(
-            Long idLoja,
-            Long idCategoria,
+            Long id_loja,
+            Long id_categoria,
             String nome,
             String descricao,
             Double preco,
             String imagem,
             Integer estoque,
-            Integer estoqueMinimo,
+            Integer estoque_minimo,
             Boolean disponivel) {
     }
 }

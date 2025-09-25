@@ -21,9 +21,9 @@ public class AvaliacaoService {
     private final UsuarioRepository usuarioRepo;
 
     public Avaliacao avaliar(CreateAvaliacao dto) {
-        Produto produto = produtoRepo.findById(dto.idProduto())
+        Produto produto = produtoRepo.findById(dto.id_produto())
                 .orElseThrow(() -> new IllegalArgumentException("Produto não encontrado"));
-        Usuario usuario = usuarioRepo.findById(dto.idUsuario())
+        Usuario usuario = usuarioRepo.findById(dto.id_usuario())
                 .orElseThrow(() -> new IllegalArgumentException("Usuário não encontrado"));
 
         Avaliacao existente = avaliacaoRepo.findByProdutoAndUsuario(produto, usuario).orElse(null);
@@ -47,7 +47,7 @@ public class AvaliacaoService {
                 .average()
                 .orElse(0.0);
 
-        produto.setAvaliacaoMedia(media);
+        produto.setAvaliacao_media(media);
         produtoRepo.save(produto);
 
         return existente;

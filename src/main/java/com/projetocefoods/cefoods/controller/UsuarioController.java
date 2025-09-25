@@ -62,26 +62,26 @@ public class UsuarioController {
                 usuario.setTelefone(dto.getTelefone());
             if (dto.getCpf() != null)
                 usuario.setCpf(dto.getCpf());
-            if (dto.getDataNascimento() != null)
-                usuario.setDataNascimento(dto.getDataNascimento());
-            if (dto.getTipoUsuario() != null)
-                usuario.setTipoUsuario(dto.getTipoUsuario());
-            if (dto.getTipoPerfil() != null)
-                usuario.setTipoPerfil(dto.getTipoPerfil());
-            if (dto.getChavePix() != null)
-                usuario.setChavePix(dto.getChavePix());
-            if (dto.getFotoPerfil() != null)
-                usuario.setFotoPerfil(dto.getFotoPerfil());
+            if (dto.getData_nascimento() != null)
+                usuario.setData_nascimento(dto.getData_nascimento());
+            if (dto.getTipo_usuario() != null)
+                usuario.setTipo_usuario(dto.getTipo_usuario());
+            if (dto.getTipo_perfil() != null)
+                usuario.setTipo_perfil(dto.getTipo_perfil());
+            if (dto.getChave_pix() != null)
+                usuario.setChave_pix(dto.getChave_pix());
+            if (dto.getFoto_perfil() != null)
+                usuario.setFoto_perfil(dto.getFoto_perfil());
             if (dto.getAtivo() != null)
                 usuario.setAtivo(dto.getAtivo());
-            if (dto.getEmailVerificado() != null)
-                usuario.setEmailVerificado(dto.getEmailVerificado());
-            if (dto.getTokenRecuperacao() != null)
-                usuario.setTokenRecuperacao(dto.getTokenRecuperacao());
-            if (dto.getUltimoAcesso() != null)
-                usuario.setUltimoAcesso(dto.getUltimoAcesso());
-            if (dto.getPossuiLoja() != null)
-                usuario.setPossuiLoja(dto.getPossuiLoja());
+            if (dto.getEmail_verificado() != null)
+                usuario.setEmail_verificado(dto.getEmail_verificado());
+            if (dto.getToken_recuperacao() != null)
+                usuario.setToken_recuperacao(dto.getToken_recuperacao());
+            if (dto.getUltimo_acesso() != null)
+                usuario.setUltimo_acesso(dto.getUltimo_acesso());
+            if (dto.getPossui_loja() != null)
+                usuario.setPossui_loja(dto.getPossui_loja());
 
             Usuario atualizado = usuarioRepository.save(usuario);
             return ResponseEntity.ok(atualizado);

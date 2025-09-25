@@ -7,7 +7,7 @@ import com.projetocefoods.cefoods.model.Notificacao;
 import java.util.List;
 
 public interface NotificacaoRepository extends JpaRepository<Notificacao, Long> {
-    List<Notificacao> findByUsuarioDestinoIdUsuarioOrderByDataCriacaoDesc(Long idUsuario);
-    List<Notificacao> findByLojaDestinoIdLojaOrderByDataCriacaoDesc(Long idLoja);
-    List<Notificacao> findByUsuarioDestinoIdUsuarioAndLidaFalse(Long idUsuario);
+    List<Notificacao> findByUsuario_destinoId_usuarioOrderByData_criacaoDesc(Long id_usuario);
+    List<Notificacao> findByLoja_destinoId_lojaOrderByData_criacaoDesc(Long id_loja);
+    List<Notificacao> findByUsuario_destinoId_usuarioAndLidaFalse(Long id_usuario);
 }
