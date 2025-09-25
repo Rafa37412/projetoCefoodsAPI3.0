@@ -9,23 +9,23 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 @Entity
-@Table(name = "tbhorariofuncionamento")
+@Table(name = "tb_horario_funcionamento")
 public class HorarioFuncionamento {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "idHorario")
+    @Column(name = "id_horario")
     private Long idHorario;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "idLoja", nullable = false)
+    @JoinColumn(name = "id_loja", nullable = false)
     private Loja loja;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @Column(name = "dia_semana", nullable = false)
     private DiaSemana diaSemana;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @Column(name = "turno", nullable = false)
     private Turno turno;
 }

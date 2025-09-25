@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
-@Table(name = "tbitempedido")
+@Table(name = "tb_item_pedido")
 @IdClass(ItemPedidoId.class)
 @Data
 @Builder
@@ -14,19 +14,21 @@ public class ItemPedido {
 
     @Id
     @ManyToOne
-    @JoinColumn(name = "idPedido", nullable = false)
+    @JoinColumn(name = "id_pedido", nullable = false)
     private Pedido pedido;
 
     @Id
     @ManyToOne
-    @JoinColumn(name = "idProduto", nullable = false)
+    @JoinColumn(name = "id_produto", nullable = false)
     private Produto produto;
 
+    @Column(name = "quantidade")
     private Integer quantidade;
 
+    @Column(name = "preco_unitario")
     private Double precoUnitario;
 
-    @Column(insertable = false, updatable = false)
+    @Column(name = "subtotal", insertable = false, updatable = false)
     private Double subtotal;
 
 }

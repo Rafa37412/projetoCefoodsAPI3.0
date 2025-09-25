@@ -5,7 +5,7 @@ import lombok.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "tbcarrinho")
+@Table(name = "tb_carrinho")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -14,16 +14,18 @@ import java.time.LocalDateTime;
 public class Carrinho {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id_carrinho")
     private Long idCarrinho;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "idUsuario", nullable = false)
+    @JoinColumn(name = "id_usuario", nullable = false)
     private Usuario usuario;
 
     // Carrinho.java
     @ManyToOne(optional = true)
-    @JoinColumn(name = "idLoja", nullable = true)
+    @JoinColumn(name = "id_loja", nullable = true)
     private Loja loja; // pode ser null
 
+    @Column(name = "criado_em")
     private LocalDateTime criadoEm;
 }

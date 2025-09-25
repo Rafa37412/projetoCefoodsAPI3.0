@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
-@Table(name = "tbavaliacao")
+@Table(name = "tb_avaliacao")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -13,15 +13,17 @@ public class Avaliacao {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private Long id;
 
+    @Column(name = "estrelas")
     private int estrelas;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "idProduto", nullable = false)
+    @JoinColumn(name = "id_produto", nullable = false)
     private Produto produto;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "idUsuario", nullable = false)
+    @JoinColumn(name = "id_usuario", nullable = false)
     private Usuario usuario;
 }

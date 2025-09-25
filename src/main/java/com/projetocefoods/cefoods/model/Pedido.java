@@ -56,22 +56,33 @@ import java.util.List;
 public class Pedido {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id_pedido")
     private Long idPedido;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "idUsuario", nullable = false)
+    @JoinColumn(name = "id_usuario", nullable = false)
     private Usuario usuario;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "idLoja", nullable = false)
+    @JoinColumn(name = "id_loja", nullable = false)
     private Loja loja;
 
+    @Column(name = "nome_cliente")
     private String nomeCliente;
+    
     @Column(name = "forma_pagamento")
     private String formaPagamento;
+    
+    @Column(name = "total")
     private Double total;
+    
+    @Column(name = "status")
     private String status;
+    
+    @Column(name = "data_pedido")
     private LocalDateTime dataPedido;
+    
+    @Column(name = "horario_retirada")
     private String horarioRetirada;
 
     @OneToMany(mappedBy = "pedido", cascade = CascadeType.ALL, orphanRemoval = true)

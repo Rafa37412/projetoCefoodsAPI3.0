@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name = "tbnota")
+@Table(name = "tb_nota")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -20,22 +20,25 @@ public class Nota {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id_nota")
     private Long idNota;
 
+    @Column(name = "titulo")
     private String titulo;
 
-    @Column(columnDefinition = "TEXT")
+    @Column(name = "texto", columnDefinition = "TEXT")
     private String texto;
 
+    @Column(name = "data_criacao")
     private LocalDateTime dataCriacao;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "idUsuario", nullable = false)
+    @JoinColumn(name = "id_usuario", nullable = false)
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
     private Usuario usuario;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "idLoja", nullable = false)
+    @JoinColumn(name = "id_loja", nullable = false)
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
     private Loja loja;
 

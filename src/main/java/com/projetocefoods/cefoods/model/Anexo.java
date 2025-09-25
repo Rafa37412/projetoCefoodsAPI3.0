@@ -6,22 +6,28 @@ import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
-@Table(name = "tbnota_anexo")
+@Table(name = "tb_nota_anexo")
 @Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder
 @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
 public class Anexo {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id_anexo")
     private Long idAnexo;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "idNota", nullable = false)
+    @JoinColumn(name = "id_nota", nullable = false)
     @JsonIgnore
     private Nota nota;
 
+    @Column(name = "nome_arquivo")
     private String nomeArquivo;
+    
+    @Column(name = "tipo")
     private String tipo;
+    
+    @Column(name = "tamanho")
     private Long tamanho;
 
     @Lob
