@@ -37,7 +37,7 @@ public class NotaService {
                 .texto(texto)
                 .usuario(u)
                 .loja(l)
-                .data_criacao(LocalDateTime.now())
+                .dataCriacao(LocalDateTime.now())
                 .anexos(new java.util.ArrayList<>()) // garante que não será null
                 .build();
 
@@ -68,7 +68,7 @@ public class NotaService {
     }
 
     public List<Nota> listarPorLoja(Long idLoja) {
-        return notaRepo.findByLojaIdOrderByData_criacaoDesc(idLoja);
+        return notaRepo.findByLojaIdOrderByDataCriacaoDesc(idLoja);
     }
 
     public Nota buscarPorId(Long id) {

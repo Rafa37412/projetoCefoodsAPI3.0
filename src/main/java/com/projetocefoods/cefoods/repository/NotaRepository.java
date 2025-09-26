@@ -7,5 +7,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface NotaRepository extends JpaRepository<Nota, Long> {
-    List<Nota> findByLojaIdOrderByData_criacaoDesc(Long id_loja);
+    List<Nota> findByLojaIdOrderByDataCriacaoDesc(Long id_loja);
 }

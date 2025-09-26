@@ -23,7 +23,7 @@ public class NotaDTO {
         Long id_nota,
         String titulo,
         String texto,
-        LocalDateTime data_criacao,
+        LocalDateTime dataCriacao,
         Long id_usuario,
         Long id_loja,
         List<AnexoResponse> anexos

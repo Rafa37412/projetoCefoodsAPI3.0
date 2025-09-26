@@ -28,7 +28,8 @@ public class Nota {
     @Column(columnDefinition = "TEXT")
     private String texto;
 
-    private LocalDateTime data_criacao;
+    @Column(name = "data_criacao")
+    private LocalDateTime dataCriacao;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_usuario", nullable = false)
@@ -46,7 +47,7 @@ public class Nota {
 
     @PrePersist
     public void prePersist() {
-        if (this.data_criacao == null)
-            this.data_criacao = LocalDateTime.now();
+        if (this.dataCriacao == null)
+            this.dataCriacao = LocalDateTime.now();
     }
 }

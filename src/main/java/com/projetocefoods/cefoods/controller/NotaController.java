@@ -73,7 +73,7 @@ public class NotaController {
                 n.getId(),
                 n.getTitulo(),
                 n.getTexto(),
-                n.getData_criacao(),
+                n.getDataCriacao(),
                 n.getUsuario() != null ? n.getUsuario().getId() : null,
                 n.getLoja() != null ? n.getLoja().getId() : null,
                 anexos);
