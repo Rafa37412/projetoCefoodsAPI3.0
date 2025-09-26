@@ -28,11 +28,11 @@ public class Notificacao {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_usuario_destino")
-    private Usuario usuario_destino;
+    private Usuario usuariodestino;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_loja_destino")
-    private Loja loja_destino;
+    private Loja lojadestino;
 
     private Long pedido_id;
 
@@ -47,5 +47,5 @@ public class Notificacao {
     private Boolean lida = false;
 
     @Builder.Default
-    private LocalDateTime data_criacao = LocalDateTime.now();
+    private LocalDateTime dataCriacao = LocalDateTime.now();
 }

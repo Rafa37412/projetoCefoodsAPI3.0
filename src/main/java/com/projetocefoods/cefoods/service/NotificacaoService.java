@@ -28,13 +28,13 @@ public class NotificacaoService {
                 .tipo(tipo)
                 .titulo(titulo)
                 .mensagem(mensagem)
-                .usuario_destino(usuario)
-                .loja_destino(loja)
+                .usuariodestino(usuario)
+                .lojadestino(loja)
                 .pedido_id(pedidoId)
                 .produto_id(produtoId)
                 .dados(dadosJson)
                 .lida(false)
-                .data_criacao(LocalDateTime.now())
+                .dataCriacao(LocalDateTime.now())
                 .build();
 
         notifRepo.save(n);
@@ -49,7 +49,7 @@ public class NotificacaoService {
     }
 
     public List<Notificacao> listarPorUsuario(Long idUsuario) {
-        return notifRepo.findByUsuario_destinoIdOrderByData_criacaoDesc(idUsuario);
+        return notifRepo.findByUsuariodestino_IdOrderByDataCriacaoDesc(idUsuario);
     }
 
     public Notificacao marcarComoLida(Long id) {
@@ -68,7 +68,7 @@ public class NotificacaoService {
         dto.put("lida", n.getLida());
         dto.put("pedidoId", n.getPedido_id());
         dto.put("produtoId", n.getProduto_id());
-        dto.put("dataCriacao", n.getData_criacao());
+        dto.put("dataCriacao", n.getDataCriacao());
         // opcional: cor/ícone baseados no tipo
         switch (n.getTipo()) {
             case "ORDER_RECEIVED" -> dto.put("color", "blue");
