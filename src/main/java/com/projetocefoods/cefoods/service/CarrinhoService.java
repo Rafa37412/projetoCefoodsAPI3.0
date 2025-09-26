@@ -37,12 +37,12 @@ public class CarrinhoService {
         var items = carrinhoItemRepo.findByCarrinho(c);
 
         CarrinhoDTO dto = new CarrinhoDTO();
-        dto.id_carrinho = c.getId_carrinho();
+        dto.id_carrinho = c.getId();
         // id_loja: obtido a partir do primeiro item (se houver)
-        dto.id_loja = items.isEmpty() ? null : items.get(0).getProduto().getLoja().getId_loja();
+        dto.id_loja = items.isEmpty() ? null : items.get(0).getProduto().getLoja().getId();
         dto.itens = items.stream().map(ci -> {
             var it = new CarrinhoDTO.Item();
-            it.produto_id = ci.getProduto().getId_produto();
+            it.produto_id = ci.getProduto().getId();
             it.nome = ci.getProduto().getNome();
             it.preco_unit = ci.getProduto().getPreco();
             it.quantidade = ci.getQuantidade();
@@ -85,8 +85,8 @@ public class CarrinhoService {
         // Regra da loja: se já tem item, todos devem ser da mesma loja do primeiro item
         var itensAtuais = carrinhoItemRepo.findByCarrinho(carrinho);
         if (!itensAtuais.isEmpty()) {
-            var idLojaCarrinho = itensAtuais.get(0).getProduto().getLoja().getId_loja();
-            var idLojaNovo = produto.getLoja().getId_loja();
+            var idLojaCarrinho = itensAtuais.get(0).getProduto().getLoja().getId();
+            var idLojaNovo = produto.getLoja().getId();
             if (!idLojaCarrinho.equals(idLojaNovo)) {
                 throw new IllegalArgumentException("O carrinho já contém itens de outra loja. Esvazie o carrinho para trocar de loja.");
             }
@@ -234,7 +234,7 @@ public class CarrinhoService {
         CheckoutResponse resp = new CheckoutResponse();
         resp.success = true;
         resp.message = "Pedido criado com sucesso";
-        resp.id_pedido = pedido.getId_pedido();
+        resp.id_pedido = pedido.getId();
         return resp;
     }
 }

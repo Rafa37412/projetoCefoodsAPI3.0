@@ -14,7 +14,8 @@ public class HorarioFuncionamento {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id_horario;
+    @Column(name = "id_horario")
+    private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_loja", nullable = false)

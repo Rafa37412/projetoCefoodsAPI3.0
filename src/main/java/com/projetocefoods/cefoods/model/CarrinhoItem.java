@@ -9,7 +9,8 @@ import lombok.*;
 public class CarrinhoItem {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id_item;
+    @Column(name = "id_item")
+    private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_carrinho", nullable = false)

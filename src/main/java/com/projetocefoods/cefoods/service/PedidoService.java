@@ -52,25 +52,25 @@ public class PedidoService {
                 "Você recebeu um pedido de " + comprador.getNome(),
                 donoLoja,
                 pedido.getLoja(),
-                pedido.getId_pedido(),
+                pedido.getId(),
                 null,
                 null);
 
         notificacaoService.criarNotificacaoParaUsuario(
                 "ORDER_PENDING",
                 "Pedido em análise",
-                "Seu pedido " + pedido.getId_pedido() + " foi enviado com sucesso.",
+                "Seu pedido " + pedido.getId() + " foi enviado com sucesso.",
                 comprador,
                 pedido.getLoja(),
-                pedido.getId_pedido(),
+                pedido.getId(),
                 null,
                 null);
 
         // Ajuste estoque e salva itens
         for (PedidoItem item : itensPreCriados) {
-            Produto p = produtoRepo.findById(item.getProduto().getId_produto())
+            Produto p = produtoRepo.findById(item.getProduto().getId())
                     .orElseThrow(() -> new IllegalArgumentException(
-                            "Produto não encontrado: " + item.getProduto().getId_produto()));
+                            "Produto não encontrado: " + item.getProduto().getId()));
 
             if (p.getEstoque() < item.getQuantidade()) {
                 throw new IllegalArgumentException("Estoque insuficiente para " + p.getNome());
@@ -97,7 +97,7 @@ public class PedidoService {
                         p.getLoja().getUsuario(),
                         p.getLoja(),
                         null,
-                        p.getId_produto(),
+                        p.getId(),
                         null);
             }
         }
@@ -118,10 +118,10 @@ public class PedidoService {
                 notificacaoService.criarNotificacaoParaUsuario(
                         "ORDER_ACCEPTED",
                         "Pedido aceito",
-                        "Seu pedido " + salvo.getId_pedido() + " foi aceito. Encontre-se com o vendedor para retirá-lo.",
+                        "Seu pedido " + salvo.getId() + " foi aceito. Encontre-se com o vendedor para retirá-lo.",
                         comprador,
                         salvo.getLoja(),
-                        salvo.getId_pedido(),
+                        salvo.getId(),
                         null,
                         null);
             }
@@ -130,17 +130,17 @@ public class PedidoService {
                 notificacaoService.criarNotificacaoParaUsuario(
                         "ORDER_DECLINED",
                         "Pedido recusado",
-                        "Seu pedido " + salvo.getId_pedido() + " foi recusado.",
+                        "Seu pedido " + salvo.getId() + " foi recusado.",
                         comprador,
                         salvo.getLoja(),
-                        salvo.getId_pedido(),
+                        salvo.getId(),
                         null,
                         null);
 
                 List<PedidoItem> itens = pedidoItemRepo.findByPedido(salvo);
                 if (itens != null) {
                     for (PedidoItem item : itens) {
-                        Produto produto = produtoRepo.findById(item.getProduto().getId_produto()).orElse(null);
+                        Produto produto = produtoRepo.findById(item.getProduto().getId()).orElse(null);
                         if (produto != null) {
                             produto.setEstoque(produto.getEstoque() + item.getQuantidade());
                             produtoRepo.save(produto);
@@ -153,10 +153,10 @@ public class PedidoService {
                 notificacaoService.criarNotificacaoParaUsuario(
                         "ORDER_COMPLETED",
                         "Pedido finalizado",
-                        "Seu pedido " + salvo.getId_pedido() + " foi concluído com sucesso.",
+                        "Seu pedido " + salvo.getId() + " foi concluído com sucesso.",
                         comprador,
                         salvo.getLoja(),
-                        salvo.getId_pedido(),
+                        salvo.getId(),
                         null,
                         null);
             }
@@ -169,8 +169,8 @@ public class PedidoService {
         List<ItemPedidoResponse> itensDto = pedidoItemRepo.findByPedido(pedido)
                 .stream()
                 .map(i -> new ItemPedidoResponse(
-                        pedido.getId_pedido(),
-                        i.getProduto().getId_produto(),
+                        pedido.getId(),
+                        i.getProduto().getId(),
                         i.getNome(),
                         i.getQuantidade(),
                         i.getPreco(),
@@ -178,9 +178,9 @@ public class PedidoService {
                 .collect(Collectors.toList());
 
         return new PedidoResponse(
-                pedido.getId_pedido(),
-                pedido.getUsuario().getId_usuario(),
-                pedido.getLoja().getId_loja(),
+                pedido.getId(),
+                pedido.getUsuario().getId(),
+                pedido.getLoja().getId(),
                 pedido.getNome_cliente(),
                 pedido.getForma_pagamento(),
                 pedido.getTotal(),
@@ -201,7 +201,7 @@ public class PedidoService {
     public List<PedidoResponse> listarPorUsuario(Long idUsuario) {
         // Implementar busca por usuário
         return pedidoRepo.findAll().stream()
-                .filter(p -> p.getUsuario().getId_usuario().equals(idUsuario))
+                .filter(p -> p.getUsuario().getId().equals(idUsuario))
                 .map(this::toDTO)
                 .collect(Collectors.toList());
     }
@@ -209,7 +209,7 @@ public class PedidoService {
     public List<PedidoResponse> listarPorLoja(Long idLoja) {
         // Implementar busca por loja
         return pedidoRepo.findAll().stream()
-                .filter(p -> p.getLoja().getId_loja().equals(idLoja))
+                .filter(p -> p.getLoja().getId().equals(idLoja))
                 .map(this::toDTO)
                 .collect(Collectors.toList());
     }

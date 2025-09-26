@@ -199,7 +199,7 @@ public class LojaService {
     private LojaResponse toResponse(Loja l) {
         Usuario u = l.getUsuario();
         UsuarioResponse usuarioDto = new UsuarioResponse(
-                u.getId_usuario(),
+                u.getId(),
                 u.getNome(),
                 u.getEmail(),
                 u.getLogin());
@@ -209,7 +209,7 @@ public class LojaService {
                 .toList();
 
         return new LojaResponse(
-                l.getId_loja(),
+                l.getId(),
                 l.getNome_fantasia(),
                 l.getDescricao(),
                 l.getFoto_capa(),

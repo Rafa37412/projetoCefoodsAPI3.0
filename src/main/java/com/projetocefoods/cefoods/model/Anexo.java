@@ -13,7 +13,8 @@ public class Anexo {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id_anexo;
+    @Column(name = "id_anexo")
+    private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_nota", nullable = false)

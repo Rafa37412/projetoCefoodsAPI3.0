@@ -18,7 +18,8 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 public class Loja {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id_loja;
+    @Column(name = "id_loja")
+    private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_usuario", nullable = false)

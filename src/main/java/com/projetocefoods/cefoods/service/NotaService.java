@@ -68,7 +68,7 @@ public class NotaService {
     }
 
     public List<Nota> listarPorLoja(Long idLoja) {
-        return notaRepo.findByLojaId_lojaOrderByData_criacaoDesc(idLoja);
+        return notaRepo.findByLojaIdOrderByData_criacaoDesc(idLoja);
     }
 
     public Nota buscarPorId(Long id) {

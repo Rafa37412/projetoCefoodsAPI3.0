@@ -43,7 +43,7 @@ public class ItemPedidoService {
     }
 
     public List<ItemPedido> listarPorPedido(Long idPedido) {
-        return itemPedidoRepo.findByPedidoId_pedido(idPedido);
+        return itemPedidoRepo.findByPedidoId(idPedido);
     }
 
     public ItemPedido buscarPorId(Long idPedido, Long idProduto) {

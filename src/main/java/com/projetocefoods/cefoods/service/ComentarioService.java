@@ -78,7 +78,7 @@ public class ComentarioService {
                 produto.getLoja().getUsuario(),
                 produto.getLoja(),
                 null,
-                produto.getId_produto(),
+                produto.getId(),
                 null
         );
 

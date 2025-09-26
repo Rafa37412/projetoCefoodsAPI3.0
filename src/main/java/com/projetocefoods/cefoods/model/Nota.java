@@ -20,7 +20,8 @@ public class Nota {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id_nota;
+    @Column(name = "id_nota")
+    private Long id;
 
     private String titulo;
 

@@ -9,7 +9,8 @@ import lombok.*;
 public class PedidoItem {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id_pedido_item;
+    @Column(name = "id_pedido_item")
+    private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_pedido", nullable = false)

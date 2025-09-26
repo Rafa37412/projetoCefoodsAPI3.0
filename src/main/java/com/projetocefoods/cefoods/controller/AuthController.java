@@ -22,7 +22,7 @@ public class AuthController {
                 .map(u -> {
                     if (u.getSenha().equals(req.senha())) {
                         LoginResponse response = new LoginResponse(
-                                u.getId_usuario(),
+                                u.getId(),
                                 u.getNome(),
                                 null, // sobrenome (se existir)
                                 u.getLogin(),

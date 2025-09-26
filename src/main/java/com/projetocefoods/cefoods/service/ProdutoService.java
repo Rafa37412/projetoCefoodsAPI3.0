@@ -67,7 +67,7 @@ public class ProdutoService {
         Categoria categoria = categoriaRepo.findById(dto.id_categoria())
                 .orElseThrow(() -> new IllegalArgumentException("Categoria não encontrada"));
 
-        produto.setId_produto(id);
+        produto.setId(id);
         produto.setLoja(loja);
         produto.setCategoria(categoria);
         produto.setNome(dto.nome());
@@ -89,7 +89,7 @@ public class ProdutoService {
                     donoLoja,
                     produto.getLoja(),
                     null,
-                    produto.getId_produto(),
+                    produto.getId(),
                     null);
         }
 

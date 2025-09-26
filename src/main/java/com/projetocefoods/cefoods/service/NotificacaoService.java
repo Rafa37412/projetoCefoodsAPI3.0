@@ -40,8 +40,8 @@ public class NotificacaoService {
         notifRepo.save(n);
 
         // envio realtime
-        if (usuario != null && usuario.getId_usuario() != null) {
-            String dest = "/topic/notifications/user-" + usuario.getId_usuario();
+        if (usuario != null && usuario.getId() != null) {
+            String dest = "/topic/notifications/user-" + usuario.getId();
             simp.convertAndSend(dest, toDto(n));
         }
 
@@ -49,7 +49,7 @@ public class NotificacaoService {
     }
 
     public List<Notificacao> listarPorUsuario(Long idUsuario) {
-        return notifRepo.findByUsuario_destinoId_usuarioOrderByData_criacaoDesc(idUsuario);
+        return notifRepo.findByUsuario_destinoIdOrderByData_criacaoDesc(idUsuario);
     }
 
     public Notificacao marcarComoLida(Long id) {
