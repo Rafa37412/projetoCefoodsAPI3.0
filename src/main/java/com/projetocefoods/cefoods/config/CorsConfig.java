@@ -15,6 +15,7 @@ public class CorsConfig {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(true); // precisa ser true para cookies/autenticação
         config.setAllowedOriginPatterns(List.of(
+            "http://localhost:4200",
             "http://localhost:8100",
             "https://cefoodsapi-1-0-bd59ae6e7ee0.herokuapp.com"
         ));
