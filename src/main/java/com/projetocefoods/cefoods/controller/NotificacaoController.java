@@ -11,7 +11,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/notificacoes")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "http://localhost:8100") // libera só o Ionic
+@CrossOrigin(origins = "*") // usar configuração global
 public class NotificacaoController {
 
     private final NotificacaoService notifService;

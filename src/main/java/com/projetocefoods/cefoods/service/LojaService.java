@@ -72,7 +72,8 @@ public class LojaService {
     }
 
     public List<LojaResponse> listarPorUsuario(Long idUsuario) {
-        Usuario u = usuarioRepo.findById(idUsuario).orElseThrow();
+        Usuario u = usuarioRepo.findById(idUsuario)
+            .orElseThrow(() -> new RuntimeException("Usuário não encontrado com ID: " + idUsuario));
         return lojaRepo.findByUsuario(u).stream().map(this::toResponse).toList();
     }
 
