@@ -17,6 +17,7 @@ public class CorsConfig {
         config.setAllowedOriginPatterns(List.of(
             "http://localhost:4200",
             "http://localhost:8100",
+            "http://localhost:8101",
             "https://cefoodsapi-1-0-bd59ae6e7ee0.herokuapp.com"
         ));
         config.setAllowedHeaders(List.of("*"));
