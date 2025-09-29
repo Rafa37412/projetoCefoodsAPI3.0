@@ -28,7 +28,7 @@ public class Anexo {
     private Long tamanho;
 
     @Lob
-    @Column(name = "dados", columnDefinition = "LONGBLOB")
+    @Column(name = "dados", columnDefinition = "BYTEA")
     private byte[] dados;
 }
 
