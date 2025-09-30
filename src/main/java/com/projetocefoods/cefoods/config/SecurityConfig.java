@@ -18,6 +18,10 @@ import java.util.List;
 @EnableWebSecurity
 public class SecurityConfig {
 
+    // CORS centralizado aqui. A antiga classe CorsConfig foi removida para evitar
+    // configurações duplicadas que podem causar comportamento inconsistente.
+    // Ajuste as origens abaixo conforme necessidade (produção vs desenvolvimento).
+
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
@@ -35,6 +39,8 @@ public class SecurityConfig {
         ));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));
+        // Caso precise expor cabeçalhos customizados ao frontend (Ex: Authorization, Location), adicione:
+        // configuration.setExposedHeaders(List.of("Authorization", "Location"));
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;

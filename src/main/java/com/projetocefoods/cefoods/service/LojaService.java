@@ -13,6 +13,7 @@ import com.projetocefoods.cefoods.repository.HorarioFuncionamentoRepository;
 import com.projetocefoods.cefoods.repository.LojaRepository;
 import com.projetocefoods.cefoods.repository.UsuarioRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,6 +23,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class LojaService {
     private final LojaRepository lojaRepo;
     private final UsuarioRepository usuarioRepo;
@@ -55,13 +57,32 @@ public class LojaService {
         Loja lojaSalva = lojaRepo.save(novaLoja);
 
         if (dto.horarios_funcionamento() != null && !dto.horarios_funcionamento().isEmpty()) {
-            var horarios = dto.horarios_funcionamento().stream().map(h -> HorarioFuncionamento.builder()
-                    .loja(lojaSalva)
-                    .dia_semana(h.diaSemana())
-                    .turno(h.turno())
-                    .build()).toList();
+            log.debug("Processando {} horários para a nova loja id={}...", dto.horarios_funcionamento().size(), lojaSalva.getId());
 
-            horarioRepo.saveAll(horarios);
+            var builderLista = new java.util.ArrayList<HorarioFuncionamento>();
+            int idx = 0;
+            for (HorarioFuncionamentoDTO hDto : dto.horarios_funcionamento()) {
+                log.trace("Horario[{}] recebido: diaSemana={}, turno={}", idx, hDto != null ? hDto.diaSemana() : null, hDto != null ? hDto.turno() : null);
+                if (hDto == null) {
+                    throw new IllegalArgumentException("Elemento de horário null na posição " + idx);
+                }
+                if (hDto.diaSemana() == null) {
+                    throw new IllegalArgumentException("diaSemana não pode ser null (índice=" + idx + ")");
+                }
+                if (hDto.turno() == null) {
+                    throw new IllegalArgumentException("turno não pode ser null (diaSemana=" + hDto.diaSemana() + ", índice=" + idx + ")");
+                }
+                builderLista.add(HorarioFuncionamento.builder()
+                        .loja(lojaSalva)
+                        .dia_semana(hDto.diaSemana())
+                        .turno(hDto.turno())
+                        .build());
+                idx++;
+            }
+            horarioRepo.saveAll(builderLista);
+            log.debug("{} horários persistidos para a loja id={}", builderLista.size(), lojaSalva.getId());
+        } else {
+            log.debug("Nenhum horário informado para a loja id={}", lojaSalva.getId());
         }
 
         return toResponse(lojaSalva);
@@ -140,13 +161,31 @@ public class LojaService {
         horarioRepo.deleteByLoja(loja);
 
         if (novosHorarios != null && !novosHorarios.isEmpty()) {
-            var horarios = novosHorarios.stream().map(h -> HorarioFuncionamento.builder()
-                    .loja(loja)
-                    .dia_semana(h.diaSemana())
-                    .turno(h.turno())
-                    .build()).toList();
-
-            horarioRepo.saveAll(horarios);
+            log.debug("Atualizando {} horários para loja id={}", novosHorarios.size(), idLoja);
+            var builderLista = new java.util.ArrayList<HorarioFuncionamento>();
+            int idx = 0;
+            for (HorarioFuncionamentoDTO hDto : novosHorarios) {
+                log.trace("(Atualização) Horario[{}]: diaSemana={}, turno={}", idx, hDto != null ? hDto.diaSemana() : null, hDto != null ? hDto.turno() : null);
+                if (hDto == null) {
+                    throw new IllegalArgumentException("Elemento de horário null na posição " + idx);
+                }
+                if (hDto.diaSemana() == null) {
+                    throw new IllegalArgumentException("diaSemana não pode ser null (índice=" + idx + ")");
+                }
+                if (hDto.turno() == null) {
+                    throw new IllegalArgumentException("turno não pode ser null (diaSemana=" + hDto.diaSemana() + ", índice=" + idx + ")");
+                }
+                builderLista.add(HorarioFuncionamento.builder()
+                        .loja(loja)
+                        .dia_semana(hDto.diaSemana())
+                        .turno(hDto.turno())
+                        .build());
+                idx++;
+            }
+            horarioRepo.saveAll(builderLista);
+            log.debug("{} horários atualizados para a loja id={}", builderLista.size(), idLoja);
+        } else {
+            log.debug("Lista de novos horários vazia ou null para loja id={}", idLoja);
         }
     }
 
