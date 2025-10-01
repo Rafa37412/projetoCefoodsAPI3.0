@@ -5,6 +5,7 @@ import lombok.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
 @Getter
@@ -27,6 +28,8 @@ public class Usuario {
 
     private String email;
 
+    // A senha só pode ser escrita (entrada), nunca exposta em respostas JSON
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String senha;
 
     private String telefone;

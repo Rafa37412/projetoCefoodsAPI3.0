@@ -1,8 +1,10 @@
 package com.projetocefoods.cefoods.controller;
 
+import com.projetocefoods.cefoods.dto.UsuarioDTO.CreateUsuario;
 import com.projetocefoods.cefoods.dto.UsuarioUpdateDTO;
 import com.projetocefoods.cefoods.model.Usuario;
 import com.projetocefoods.cefoods.repository.UsuarioRepository;
+import com.projetocefoods.cefoods.service.UsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,6 +18,12 @@ public class UsuarioController {
 
     @Autowired
     private UsuarioRepository usuarioRepository;
+
+    @Autowired
+    private UsuarioService usuarioService;
+
+    @Autowired(required = false)
+    private org.springframework.security.crypto.password.PasswordEncoder passwordEncoder; // fallback se configurado
 
     // GET - Listar todos os usuários
     @GetMapping
@@ -31,15 +39,38 @@ public class UsuarioController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    // POST - Criar novo usuário
+    // POST - Criar novo usuário com DTO e service (validação + hash de senha + email)
     @PostMapping
-    public Usuario criarUsuario(@RequestBody Usuario usuario) {
-        return usuarioRepository.save(usuario);
+    public ResponseEntity<?> criarUsuario(@RequestBody CreateUsuario dto) {
+        try {
+            Usuario usuario = Usuario.builder()
+                    .nome(dto.nome())
+                    .login(dto.login())
+                    .email(dto.email())
+                    .senha(dto.senha()) // service irá codificar
+                    .telefone(dto.telefone())
+                    .cpf(dto.cpf())
+                    .data_nascimento(dto.data_nascimento())
+                    .tipo_usuario(dto.tipo_usuario())
+                    .tipo_perfil(dto.tipo_perfil())
+                    .chave_pix(dto.chave_pix())
+                    .foto_perfil(dto.foto_perfil())
+                    .ativo(true)
+                    .email_verificado(false)
+                    .possui_loja(false)
+                    .data_cadastro(java.time.LocalDateTime.now())
+                    .build();
+            Usuario salvo = usuarioService.cadastrarNovoUsuario(usuario);
+            // senha já write-only; retornando salvo sem expor senha
+            return ResponseEntity.ok(sanitizar(salvo));
+        } catch (IllegalStateException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     // PUT - Atualizar usuário existente
     @PutMapping("/{id}")
-    public ResponseEntity<Usuario> atualizar(@PathVariable("id") Long id, @RequestBody UsuarioUpdateDTO dto) {
+    public ResponseEntity<?> atualizar(@PathVariable("id") Long id, @RequestBody UsuarioUpdateDTO dto) {
         Optional<Usuario> usuarioOptional = usuarioRepository.findById(id);
 
         if (usuarioOptional.isPresent()) {
@@ -55,7 +86,11 @@ public class UsuarioController {
 
             // Aqui está o cuidado com a senha
             if (dto.getSenha() != null && !dto.getSenha().isEmpty()) {
-                usuario.setSenha(dto.getSenha());
+                if (passwordEncoder != null) {
+                    usuario.setSenha(passwordEncoder.encode(dto.getSenha()));
+                } else {
+                    usuario.setSenha(dto.getSenha()); // fallback sem encoder configurado
+                }
             }
 
             if (dto.getTelefone() != null)
@@ -84,7 +119,7 @@ public class UsuarioController {
                 usuario.setPossui_loja(dto.getPossui_loja());
 
             Usuario atualizado = usuarioRepository.save(usuario);
-            return ResponseEntity.ok(atualizado);
+            return ResponseEntity.ok(sanitizar(atualizado));    
         }
 
         return ResponseEntity.notFound().build();
@@ -99,5 +134,11 @@ public class UsuarioController {
         } else {
             return ResponseEntity.notFound().build();
         }
+    }
+
+    // Remove a senha explicitamente (defensivo apesar de @JsonProperty WRITE_ONLY)
+    private Usuario sanitizar(Usuario u) {
+        u.setSenha(null);
+        return u;
     }
 }
