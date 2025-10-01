@@ -38,9 +38,9 @@ public class Notificacao {
 
     private Long produto_id;
 
-    // Campo 'dados' corrigido (mantendo a versão com as anotações corretas)
+    // Armazena payload dinâmico em JSON (PostgreSQL jsonb). Usar String aqui evita dependência de conversores custom.
     @JdbcTypeCode(SqlTypes.JSON)
-    @Column(columnDefinition = "json")
+    @Column(columnDefinition = "jsonb")
     private String dados;
 
     @Builder.Default

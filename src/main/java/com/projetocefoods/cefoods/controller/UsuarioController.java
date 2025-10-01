@@ -119,7 +119,7 @@ public class UsuarioController {
                 usuario.setPossui_loja(dto.getPossui_loja());
 
             Usuario atualizado = usuarioRepository.save(usuario);
-            return ResponseEntity.ok(sanitizar(atualizado));    
+            return ResponseEntity.ok(sanitizar(atualizado));
         }
 
         return ResponseEntity.notFound().build();
