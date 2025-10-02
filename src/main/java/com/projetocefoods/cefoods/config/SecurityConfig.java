@@ -31,15 +31,17 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration cfg = new CorsConfiguration();
         cfg.setAllowCredentials(true);
-    cfg.setAllowedOriginPatterns(List.of(
-        "*",
-        "https://seu-dominio-frontend.com",
-        "http://localhost:4200",
-        "http://localhost:8100",
-        "https://cefoodsapi-1-0-bd59ae6e7ee0.herokuapp.com"
-    ));
+        // Lista explícita de origens confiáveis (adicione/remova conforme necessidade)
+        cfg.setAllowedOrigins(List.of(
+                "http://localhost:8100",
+                "http://localhost:4200",
+                "https://seu-dominio-frontend.com",
+                "https://cefoodsapp.com",
+                "https://cefoodsapi-1-0-bd59ae6e7ee0.herokuapp.com"
+        ));
         cfg.setAllowedMethods(List.of("GET","POST","PUT","DELETE","PATCH","OPTIONS"));
-        cfg.setAllowedHeaders(List.of("Authorization","Content-Type","Accept"));
+        // Cabeçalhos amplos para evitar bloqueio em preflight, incluindo customizados
+        cfg.setAllowedHeaders(List.of("*"));
         cfg.setExposedHeaders(List.of("Authorization","Content-Disposition"));
         cfg.setMaxAge(3600L);
         UrlBasedCorsConfigurationSource src = new UrlBasedCorsConfigurationSource();
