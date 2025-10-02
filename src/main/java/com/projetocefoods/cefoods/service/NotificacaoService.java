@@ -24,6 +24,18 @@ public class NotificacaoService {
     public Notificacao criarNotificacaoParaUsuario(String tipo, String titulo, String mensagem,
                                                    Usuario usuario, Loja loja,
                                                    Long pedidoId, Long produtoId, String dadosJson) {
+        // Garante JSON válido para coluna jsonb (PostgreSQL exige formato JSON correto)
+        if (dadosJson == null || dadosJson.isBlank()) {
+            dadosJson = "{}"; // mínimo válido
+        } else {
+            // validação simples: se não começa com { ou [ adiciona aspas para ser string JSON JSON-escaped
+            String trimmed = dadosJson.trim();
+            if (!(trimmed.startsWith("{") && trimmed.endsWith("}")) &&
+                !(trimmed.startsWith("[") && trimmed.endsWith("]"))) {
+                // transforma texto simples em JSON string
+                dadosJson = '"' + trimmed.replace("\"", "\\\"") + '"';
+            }
+        }
         Notificacao n = Notificacao.builder()
                 .tipo(tipo)
                 .titulo(titulo)
