@@ -3,11 +3,13 @@ package com.projetocefoods.cefoods.model;
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDateTime;
-import org.hibernate.annotations.JdbcTypeCode;
-import org.hibernate.type.SqlTypes;
+
+// REMOVIDAS AS IMPORTAÇÕES NÃO UTILIZADAS DO HIBERNATE
+// import org.hibernate.annotations.JdbcTypeCode;
+// import org.hibernate.type.SqlTypes;
 
 @Entity
-@Table(name = "tb_notificacao") // Ajustado para seguir o padrão
+@Table(name = "tb_notificacao")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -19,7 +21,7 @@ public class Notificacao {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String tipo; // e.g. ORDER_RECEIVED, LOW_STOCK, COMMENT, ORDER_STATUS
+    private String tipo;
 
     private String titulo;
 
@@ -38,11 +40,11 @@ public class Notificacao {
 
     private Long produto_id;
 
-    // Armazena payload dinâmico em JSON (PostgreSQL jsonb). Usar String aqui evita dependência de conversores custom.
-    @JdbcTypeCode(SqlTypes.JSON)
-    @Column(columnDefinition = "jsonb")
-
-    // so fazer biuld msm.
+    // ----- CORREÇÃO APLICADA AQUI -----
+    // A anotação @JdbcTypeCode(SqlTypes.JSON) foi removida pois estava gerando SQL inválido.
+    // A anotação @Column(columnDefinition = "jsonb") é a forma correta e suficiente
+    // para instruir o Hibernate a usar o tipo nativo do PostgreSQL.
+    @Column(name = "dados", columnDefinition = "jsonb")
     private String dados;
 
     @Builder.Default
