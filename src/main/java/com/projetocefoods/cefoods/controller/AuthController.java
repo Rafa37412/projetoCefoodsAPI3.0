@@ -20,7 +20,7 @@ public class AuthController {
     public ResponseEntity<?> login(@RequestBody @Validated LoginRequest req) {
         return usuarioService.buscarPorLogin(req.login())
                 .map(u -> {
-                    if (u.getSenha().equals(req.senha())) {
+                    if (u.getSenha().equals(req.senha())) { // TODO: usar PasswordEncoder.matches
                         LoginResponse response = new LoginResponse(
                                 u.getId(),
                                 u.getNome(),
@@ -46,6 +46,37 @@ public class AuthController {
                     }
                 })
                 .orElseGet(() -> ResponseEntity.status(401).body("Login ou senha inválidos"));
+    }
+
+    @PostMapping("/register")
+    public ResponseEntity<?> registrar(@RequestBody Usuario usuario) {
+        try {
+            Usuario salvo = usuarioService.cadastrarNovoUsuario(usuario);
+            return ResponseEntity.ok("Usuário cadastrado. Verifique seu e-mail para confirmar (se fornecido).");
+        } catch (IllegalStateException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @GetMapping("/verify")
+    public ResponseEntity<?> verificar(@RequestParam("token") String token) {
+        try {
+            boolean ok = usuarioService.verificarEmail(token);
+            if (ok) return ResponseEntity.ok("E-mail verificado com sucesso");
+            return ResponseEntity.badRequest().body("Token inválido");
+        } catch (IllegalStateException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @PostMapping("/resend-verification")
+    public ResponseEntity<?> reenviar(@RequestParam("email") String email) {
+        try {
+            usuarioService.reenviarVerificacao(email);
+            return ResponseEntity.ok("E-mail de verificação reenviado");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
 }

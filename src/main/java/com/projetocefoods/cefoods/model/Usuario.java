@@ -56,6 +56,12 @@ public class Usuario {
 
     private String token_recuperacao;
 
+    // Token para verificação de e-mail pós cadastro
+    private String email_verification_token;
+
+    // Data/hora de expiração do token de verificação
+    private LocalDateTime email_verification_expira;
+
     private Boolean possui_loja;
 
 }

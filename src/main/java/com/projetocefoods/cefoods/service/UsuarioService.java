@@ -8,6 +8,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional; // Importe para transações
 
 import java.util.Optional;
+import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor // Anotação do Lombok que cria o construtor para você
@@ -40,23 +42,73 @@ public class UsuarioService {
             throw new IllegalStateException("O login '" + novoUsuario.getLogin() + "' já está em uso.");
         }
 
+        // Verifica e-mail duplicado (se fornecido)
+        if (novoUsuario.getEmail() != null && usuarioRepository.findByEmail(novoUsuario.getEmail()).isPresent()) {
+            throw new IllegalStateException("O e-mail '" + novoUsuario.getEmail() + "' já está em uso.");
+        }
+
         // 2. SEGURANÇA: Criptografa a senha antes de salvar
         String senhaCriptografada = passwordEncoder.encode(novoUsuario.getSenha());
         novoUsuario.setSenha(senhaCriptografada);
         
         // 3. PERSISTÊNCIA: Salva o novo usuário no banco de dados
+        // Inicializa status de verificação
+        novoUsuario.setEmail_verificado(false);
+        novoUsuario.setData_cadastro(LocalDateTime.now());
+        novoUsuario.setAtivo(true);
+
+        // Gera token de verificação
+        String token = UUID.randomUUID().toString();
+        novoUsuario.setEmail_verification_token(token);
+        novoUsuario.setEmail_verification_expira(LocalDateTime.now().plusHours(24));
+
         Usuario usuarioSalvo = usuarioRepository.save(novoUsuario);
 
-        // 4. NOTIFICAÇÃO: Envia o e-mail de boas-vindas
-        String emailDestinatario = usuarioSalvo.getEmail();
-        String nomeUsuario = usuarioSalvo.getNome();
-        
-        String assunto = "Bem-vindo ao Cefoods!";
-        String mensagem = "Olá, " + nomeUsuario + "!\n\nSeu cadastro na plataforma Cefoods foi realizado com sucesso.\n\nAtenciosamente,\nEquipe Cefoods";
-        
-        mailService.enviarEmailDeTexto(emailDestinatario, assunto, mensagem);
-        
+        // 4. ENVIO: E-mail de verificação (somente se forneceu e-mail)
+        if (usuarioSalvo.getEmail() != null && !usuarioSalvo.getEmail().isBlank()) {
+            String linkVerificacao = "https://seu-dominio-ou-frontend.com/verificar-email?token=" + token;
+            String assunto = "Verifique seu e-mail - Cefoods";
+            String mensagem = "Olá, " + usuarioSalvo.getNome() + ",\n\n" +
+                    "Obrigado por se cadastrar no Cefoods. Por favor confirme seu e-mail clicando no link abaixo (válido por 24h):\n" +
+                    linkVerificacao + "\n\nSe você não solicitou este cadastro, ignore este e-mail.";
+            mailService.enviarEmailDeTexto(usuarioSalvo.getEmail(), assunto, mensagem);
+        }
+
         return usuarioSalvo;
+    }
+
+    @Transactional
+    public boolean verificarEmail(String token) {
+        if (token == null || token.isBlank()) return false;
+        return usuarioRepository.findByEmailVerificationToken(token)
+                .map(u -> {
+                    if (u.getEmail_verificado() != null && u.getEmail_verificado()) return true; // já verificado
+                    if (u.getEmail_verification_expira() != null && u.getEmail_verification_expira().isBefore(LocalDateTime.now())) {
+                        throw new IllegalStateException("Token expirado. Solicite novo envio.");
+                    }
+                    u.setEmail_verificado(true);
+                    u.setEmail_verification_token(null);
+                    u.setEmail_verification_expira(null);
+                    usuarioRepository.save(u);
+                    return true;
+                }).orElse(false);
+    }
+
+    @Transactional
+    public void reenviarVerificacao(String email) {
+        Usuario u = usuarioRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("Usuário com esse e-mail não encontrado"));
+        if (Boolean.TRUE.equals(u.getEmail_verificado())) {
+            throw new IllegalStateException("E-mail já verificado");
+        }
+        String token = UUID.randomUUID().toString();
+        u.setEmail_verification_token(token);
+        u.setEmail_verification_expira(LocalDateTime.now().plusHours(24));
+        usuarioRepository.save(u);
+        String linkVerificacao = "https://seu-dominio-ou-frontend.com/verificar-email?token=" + token;
+        String assunto = "Novo link de verificação - Cefoods";
+        String mensagem = "Olá, " + u.getNome() + ",\n\nSegue novo link para verificar seu e-mail (24h):\n" + linkVerificacao;
+        mailService.enviarEmailDeTexto(u.getEmail(), assunto, mensagem);
     }
 
     // ... (outros métodos do seu serviço)
