@@ -29,22 +29,41 @@ public class SecurityConfig {
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowCredentials(true); // precisa ser true para cookies/autenticação
-        configuration.setAllowedOriginPatterns(List.of(
-            "http://localhost:4200",
-            "http://localhost:8100",
-            "http://localhost:8101",
-            "https://cefoodsapi-1-0-bd59ae6e7ee0.herokuapp.com"
-        ));
-        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
-        configuration.setAllowedHeaders(List.of("*"));
-        // Caso precise expor cabeçalhos customizados ao frontend (Ex: Authorization, Location), adicione:
-        // configuration.setExposedHeaders(List.of("Authorization", "Location"));
+        // ===================== CORS ABERTO (TEMPORÁRIO PARA TESTES) =====================
+        CorsConfiguration open = new CorsConfiguration();
+        open.setAllowCredentials(true);
+        open.setAllowedOriginPatterns(List.of("*")); // permite qualquer origem (substituir depois)
+        open.setAllowedMethods(List.of("*"));
+        open.setAllowedHeaders(List.of("*"));
+        open.setExposedHeaders(List.of("Authorization", "Content-Disposition"));
+        open.setMaxAge(3600L);
+
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration);
+        source.registerCorsConfiguration("/**", open);
         return source;
     }
+
+    /* ===================== CONFIGURAÇÃO RESTRITA (GUARDAR PARA PRODUÇÃO) =====================
+    Exemplo para reverter depois dos testes:
+
+    private CorsConfigurationSource corsConfigurationSourceRestrito() {
+        CorsConfiguration cfg = new CorsConfiguration();
+        cfg.setAllowCredentials(true);
+        cfg.setAllowedOriginPatterns(List.of(
+                "https://seu-dominio-frontend.com",
+                "http://localhost:4200",
+                "http://localhost:8100",
+                "https://cefoodsapi-1-0-bd59ae6e7ee0.herokuapp.com"
+        ));
+        cfg.setAllowedMethods(List.of("GET","POST","PUT","DELETE","PATCH","OPTIONS"));
+        cfg.setAllowedHeaders(List.of("Authorization","Content-Type","Accept"));
+        cfg.setExposedHeaders(List.of("Authorization","Content-Disposition"));
+        cfg.setMaxAge(3600L);
+        UrlBasedCorsConfigurationSource src = new UrlBasedCorsConfigurationSource();
+        src.registerCorsConfiguration("/**", cfg);
+        return src;
+    }
+    ========================================================================================= */
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {

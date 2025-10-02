@@ -6,6 +6,8 @@ import com.projetocefoods.cefoods.model.*;
 import com.projetocefoods.cefoods.repository.PedidoItemRepository;
 import com.projetocefoods.cefoods.repository.PedidoRepository;
 import com.projetocefoods.cefoods.repository.ProdutoRepository;
+import com.projetocefoods.cefoods.repository.UsuarioRepository;
+import com.projetocefoods.cefoods.repository.LojaRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,24 +25,36 @@ public class PedidoService {
     private final PedidoItemRepository pedidoItemRepo;
     private final ProdutoRepository produtoRepo;
     private final NotificacaoService notificacaoService;
+    private final UsuarioRepository usuarioRepository;
+    private final LojaRepository lojaRepository;
 
+    /**
+     * Cria um pedido garantindo que Usuario e Loja sejam entidades gerenciadas (buscadas do banco)
+     * evitando associar entidades transientes apenas com ID setado manualmente.
+     */
     @Transactional
-    public Pedido criarPedido(Usuario usuario, Loja loja, String nomeCliente,
-            String formaPagamento, Double total, String horarioRetirada,
-            List<PedidoItem> itensPreCriados) {
+    public Pedido criarPedido(Long idUsuario, Long idLoja, String nomeCliente,
+                  String formaPagamento, Double total, String horarioRetirada,
+                  List<PedidoItem> itensPreCriados) {
 
-        Pedido pedido = Pedido.builder()
-                .usuario(usuario)
-                .loja(loja)
-                .nome_cliente(nomeCliente)
-                .forma_pagamento(formaPagamento)
-                .total(total)
-                .status("PENDING")
-                .data_pedido(LocalDateTime.now())
-                .horario_retirada(horarioRetirada)
-                .build();
+    Usuario usuario = usuarioRepository.findById(idUsuario)
+        .orElseThrow(() -> new jakarta.persistence.EntityNotFoundException("Usuário não encontrado"));
 
-        pedido = pedidoRepo.save(pedido);
+    Loja loja = lojaRepository.findById(idLoja)
+        .orElseThrow(() -> new jakarta.persistence.EntityNotFoundException("Loja não encontrada"));
+
+    Pedido pedido = Pedido.builder()
+        .usuario(usuario)
+        .loja(loja)
+        .nome_cliente(nomeCliente)
+        .forma_pagamento(formaPagamento)
+        .total(total)
+        .status("PENDING")
+        .data_pedido(LocalDateTime.now())
+        .horario_retirada(horarioRetirada)
+        .build();
+
+    pedido = pedidoRepo.save(pedido);
 
         // 🔔 notificações
         Usuario donoLoja = pedido.getLoja().getUsuario();
@@ -216,10 +230,19 @@ public class PedidoService {
 
     @Transactional
     public PedidoResponse criarPedidoFromController(Pedido pedido) {
-        // método usado pelo controller que recebe DTO cru
+        // Garante que usuário e loja sejam carregados do banco antes de criar
+        Long idUsuario = pedido.getUsuario() != null ? pedido.getUsuario().getId() : null;
+        Long idLoja = pedido.getLoja() != null ? pedido.getLoja().getId() : null;
+        if (idUsuario == null) {
+            throw new IllegalArgumentException("ID do usuário é obrigatório para criar pedido");
+        }
+        if (idLoja == null) {
+            throw new IllegalArgumentException("ID da loja é obrigatório para criar pedido");
+        }
+
         Pedido novo = criarPedido(
-                pedido.getUsuario(),
-                pedido.getLoja(),
+                idUsuario,
+                idLoja,
                 pedido.getNome_cliente(),
                 pedido.getForma_pagamento(),
                 pedido.getTotal(),

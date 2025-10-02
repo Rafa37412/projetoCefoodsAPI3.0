@@ -1,31 +1,29 @@
-package com.projetocefoods.cefoods.config;
-
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import org.springframework.web.filter.CorsFilter;
-
-import java.util.List;
-
-@Configuration
-public class CorsConfig {
-    @Bean
-    public CorsFilter corsFilter() {
-        CorsConfiguration config = new CorsConfiguration();
-        config.setAllowCredentials(true); // precisa ser true para cookies/autenticação
-        config.setAllowedOriginPatterns(List.of(
-            "http://localhost:4200",
-            "http://localhost:8100",
-            "http://localhost:8101",
-            "https://cefoodsapi-1-0-bd59ae6e7ee0.herokuapp.com"
-        ));
-        config.setAllowedHeaders(List.of("*"));
-        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
-
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", config);
-        return new CorsFilter(source);
-    }
-}
+// Classe desativada: CORS agora centralizado em SecurityConfig.
+// Mantida apenas como referência temporária. Remover depois.
+// package com.projetocefoods.cefoods.config;
+//
+// import org.springframework.context.annotation.Bean;
+// import org.springframework.context.annotation.Configuration;
+// import org.springframework.web.cors.CorsConfiguration;
+// import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+// import org.springframework.web.filter.CorsFilter;
+//
+// import java.util.List;
+//
+// @Configuration
+// public class CorsConfig {
+//     @Bean
+//     public CorsFilter corsFilter() {
+//         CorsConfiguration config = new CorsConfiguration();
+//         config.setAllowCredentials(true);
+//         config.setAllowedOriginPatterns(List.of("*"));
+//         config.setAllowedHeaders(List.of("*"));
+//         config.setAllowedMethods(List.of("*"));
+//         config.setExposedHeaders(List.of("Authorization", "Content-Disposition"));
+//         config.setMaxAge(3600L);
+//         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+//         source.registerCorsConfiguration("/**", config);
+//         return new CorsFilter(source);
+//     }
+// }
 

@@ -222,10 +222,15 @@ public class CarrinhoService {
                 .mapToDouble(pi -> pi.getPreco() * pi.getQuantidade())
                 .sum();
 
-        var pedido = pedidoService.criarPedido(
-                usuario, loja, usuario.getNome(), req.forma_pagamento,
-                total, req.horario_retirada, pedidoItems
-        );
+    var pedido = pedidoService.criarPedido(
+        usuario.getId(),
+        loja.getId(),
+        usuario.getNome(),
+        req.forma_pagamento,
+        total,
+        req.horario_retirada,
+        pedidoItems
+    );
 
         // “Finaliza” carrinho: limpa itens e deleta o carrinho para nascer outro
         carrinhoItemRepo.deleteByCarrinho(carrinho);
