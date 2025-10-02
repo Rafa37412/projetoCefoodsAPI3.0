@@ -22,8 +22,8 @@ public class NotificacaoService {
     private final SimpMessagingTemplate simp;
 
     public Notificacao criarNotificacaoParaUsuario(String tipo, String titulo, String mensagem,
-                                                   Usuario usuario, Loja loja,
-                                                   Long pedidoId, Long produtoId, String dadosJson) {
+        Usuario usuario, Loja loja,
+        Long pedidoId, Long produtoId, String dadosJson) {
         // Garante JSON válido para coluna jsonb (PostgreSQL exige formato JSON correto)
         if (dadosJson == null || dadosJson.isBlank()) {
             dadosJson = "{}"; // mínimo válido

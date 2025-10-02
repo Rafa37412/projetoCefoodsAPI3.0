@@ -40,11 +40,9 @@ public class Notificacao {
 
     private Long produto_id;
 
-    // ----- CORREÇÃO APLICADA AQUI -----
-    // A anotação @JdbcTypeCode(SqlTypes.JSON) foi removida pois estava gerando SQL inválido.
-    // A anotação @Column(columnDefinition = "jsonb") é a forma correta e suficiente
-    // para instruir o Hibernate a usar o tipo nativo do PostgreSQL.
-    @Column(name = "dados", columnDefinition = "jsonb")
+    // Campo 'dados' agora como TEXT para evitar dependência de jsonb em ambientes sem suporte.
+    // Se quiser voltar a usar jsonb posteriormente: alterar para @Column(name = "dados", columnDefinition = "jsonb")
+    @Column(name = "dados", columnDefinition = "TEXT")
     private String dados;
 
     @Builder.Default
