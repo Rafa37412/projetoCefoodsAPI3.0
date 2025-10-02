@@ -28,7 +28,7 @@ public class SecurityConfig {
     }
 
     @Bean
-    public CorsConfigurationSource corsConfigurationSource() {
+    /* public CorsConfigurationSource corsConfigurationSource() {
         // ===================== CORS ABERTO (TEMPORÁRIO PARA TESTES) =====================
         CorsConfiguration open = new CorsConfiguration();
         open.setAllowCredentials(true);
@@ -42,9 +42,9 @@ public class SecurityConfig {
         source.registerCorsConfiguration("/**", open);
         return source;
     }
-
-    /* ===================== CONFIGURAÇÃO RESTRITA (GUARDAR PARA PRODUÇÃO) =====================
-    Exemplo para reverter depois dos testes:
+    */
+    // ====================== CONFIGURAÇÃO RESTRITA (GUARDAR PARA PRODUÇÃO) =====================
+    // Exemplo para reverter depois dos testes:
 
     private CorsConfigurationSource corsConfigurationSourceRestrito() {
         CorsConfiguration cfg = new CorsConfiguration();
@@ -63,13 +63,13 @@ public class SecurityConfig {
         src.registerCorsConfiguration("/**", cfg);
         return src;
     }
-    ========================================================================================= */
+    // ========================================================================================= 
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
             .csrf(AbstractHttpConfigurer::disable)
-            .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+            .cors(cors -> cors.configurationSource(corsConfigurationSourceRestrito()))
             .authorizeHttpRequests(auth -> auth
                 .anyRequest().permitAll()
             );
