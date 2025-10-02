@@ -41,6 +41,8 @@ public class Notificacao {
     // Armazena payload dinâmico em JSON (PostgreSQL jsonb). Usar String aqui evita dependência de conversores custom.
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(columnDefinition = "jsonb")
+
+    // so fazer biuld msm.
     private String dados;
 
     @Builder.Default
