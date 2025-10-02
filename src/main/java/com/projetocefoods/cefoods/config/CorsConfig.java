@@ -2,28 +2,10 @@
  //Mantida apenas como referência temporária. Remover depois.
  package com.projetocefoods.cefoods.config;
 
- import org.springframework.context.annotation.Bean;
- import org.springframework.context.annotation.Configuration;
- import org.springframework.web.cors.CorsConfiguration;
- import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
- import org.springframework.web.filter.CorsFilter;
+// imports removidos – classe desativada
 
- import java.util.List;
-
- @Configuration
- public class CorsConfig {
-     @Bean
-     public CorsFilter corsFilter() {
-         CorsConfiguration config = new CorsConfiguration();
-         config.setAllowCredentials(true);
-         config.setAllowedOriginPatterns(List.of("*"));
-         config.setAllowedHeaders(List.of("*"));
-         config.setAllowedMethods(List.of("*"));
-         config.setExposedHeaders(List.of("Authorization", "Content-Disposition"));
-         config.setMaxAge(3600L);
-         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-         source.registerCorsConfiguration("/**", config);
-         return new CorsFilter(source);
-     }
-    }
+// @Configuration DESATIVADA - usando apenas SecurityConfig.corsConfigurationSource()
+public class CorsConfig {
+    // Classe vazia apenas como referência histórica.
+}
  

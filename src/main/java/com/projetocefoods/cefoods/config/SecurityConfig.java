@@ -28,25 +28,7 @@ public class SecurityConfig {
     }
 
     @Bean
-    /* public CorsConfigurationSource corsConfigurationSource() {
-        // ===================== CORS ABERTO (TEMPORÁRIO PARA TESTES) =====================
-        CorsConfiguration open = new CorsConfiguration();
-        open.setAllowCredentials(true);
-        open.setAllowedOriginPatterns(List.of("*")); // permite qualquer origem (substituir depois)
-        open.setAllowedMethods(List.of("*"));
-        open.setAllowedHeaders(List.of("*"));
-        open.setExposedHeaders(List.of("Authorization", "Content-Disposition"));
-        open.setMaxAge(3600L);
-
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", open);
-        return source;
-    }
-    */
-    // ====================== CONFIGURAÇÃO RESTRITA (GUARDAR PARA PRODUÇÃO) =====================
-    // Exemplo para reverter depois dos testes:
-
-    private CorsConfigurationSource corsConfigurationSourceRestrito() {
+    public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration cfg = new CorsConfiguration();
         cfg.setAllowCredentials(true);
         cfg.setAllowedOriginPatterns(List.of(
@@ -69,7 +51,7 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
             .csrf(AbstractHttpConfigurer::disable)
-            .cors(cors -> cors.configurationSource(corsConfigurationSourceRestrito()))
+            .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             .authorizeHttpRequests(auth -> auth
                 .anyRequest().permitAll()
             );
