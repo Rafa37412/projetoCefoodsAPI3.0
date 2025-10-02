@@ -6,6 +6,7 @@ import com.projetocefoods.cefoods.model.Usuario;
 import com.projetocefoods.cefoods.service.UsuarioService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,12 +16,13 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class AuthController {
     private final UsuarioService usuarioService;
+    private final PasswordEncoder passwordEncoder;
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody @Validated LoginRequest req) {
-        return usuarioService.buscarPorLogin(req.login())
-                .map(u -> {
-                    if (u.getSenha().equals(req.senha())) { // TODO: usar PasswordEncoder.matches
+    return usuarioService.buscarPorLogin(req.login())
+        .map(u -> {
+            if (passwordEncoder.matches(req.senha(), u.getSenha())) {
                         LoginResponse response = new LoginResponse(
                                 u.getId(),
                                 u.getNome(),
@@ -51,7 +53,7 @@ public class AuthController {
     @PostMapping("/register")
     public ResponseEntity<?> registrar(@RequestBody Usuario usuario) {
         try {
-            Usuario salvo = usuarioService.cadastrarNovoUsuario(usuario);
+            usuarioService.cadastrarNovoUsuario(usuario);
             return ResponseEntity.ok("Usuário cadastrado. Verifique seu e-mail para confirmar (se fornecido).");
         } catch (IllegalStateException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
@@ -75,6 +77,29 @@ public class AuthController {
             usuarioService.reenviarVerificacao(email);
             return ResponseEntity.ok("E-mail de verificação reenviado");
         } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    // Reenviar somente o código de 6 dígitos
+    @PostMapping("/resend-code")
+    public ResponseEntity<?> reenviarCodigo(@RequestParam("email") String email) {
+        try {
+            usuarioService.reenviarCodigo(email);
+            return ResponseEntity.ok("Código reenviado");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    // Confirmar código de 6 dígitos
+    @PostMapping("/confirm-code")
+    public ResponseEntity<?> confirmarCodigo(@RequestParam("email") String email, @RequestParam("code") String code) {
+        try {
+            boolean ok = usuarioService.confirmarCodigo(email, code);
+            if (ok) return ResponseEntity.ok("E-mail verificado com sucesso");
+            return ResponseEntity.badRequest().body("Código inválido");
+        } catch (IllegalStateException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }

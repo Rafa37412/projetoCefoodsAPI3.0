@@ -62,6 +62,12 @@ public class Usuario {
     // Data/hora de expiração do token de verificação
     private LocalDateTime email_verification_expira;
 
+    // Código numérico de 6 dígitos para verificação rápida
+    private String email_verification_code;
+
+    // Expiração específica do código numérico (pode ser menor, ex: 15 min)
+    private LocalDateTime email_verification_code_expira;
+
     private Boolean possui_loja;
 
 }

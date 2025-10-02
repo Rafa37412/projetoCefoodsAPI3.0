@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional; // Importe para
 import java.util.Optional;
 import java.time.LocalDateTime;
 import java.util.UUID;
+import java.security.SecureRandom;
 
 @Service
 @RequiredArgsConstructor // Anotação do Lombok que cria o construtor para você
@@ -57,22 +58,26 @@ public class UsuarioService {
         novoUsuario.setData_cadastro(LocalDateTime.now());
         novoUsuario.setAtivo(true);
 
-        // Gera token de verificação
-        String token = UUID.randomUUID().toString();
-        novoUsuario.setEmail_verification_token(token);
-        novoUsuario.setEmail_verification_expira(LocalDateTime.now().plusHours(24));
+    // Gera token de verificação (UUID longo) e código de 6 dígitos curto
+    String token = UUID.randomUUID().toString();
+    novoUsuario.setEmail_verification_token(token);
+    novoUsuario.setEmail_verification_expira(LocalDateTime.now().plusHours(24));
+
+    String code = gerarCodigo6();
+    novoUsuario.setEmail_verification_code(code);
+    novoUsuario.setEmail_verification_code_expira(LocalDateTime.now().plusMinutes(15));
 
         Usuario usuarioSalvo = usuarioRepository.save(novoUsuario);
 
         // 4. ENVIO: E-mail de verificação (somente se forneceu e-mail)
-        if (usuarioSalvo.getEmail() != null && !usuarioSalvo.getEmail().isBlank()) {
-            String linkVerificacao = "https://seu-dominio-ou-frontend.com/verificar-email?token=" + token;
-            String assunto = "Verifique seu e-mail - Cefoods";
-            String mensagem = "Olá, " + usuarioSalvo.getNome() + ",\n\n" +
-                    "Obrigado por se cadastrar no Cefoods. Por favor confirme seu e-mail clicando no link abaixo (válido por 24h):\n" +
-                    linkVerificacao + "\n\nSe você não solicitou este cadastro, ignore este e-mail.";
-            mailService.enviarEmailDeTexto(usuarioSalvo.getEmail(), assunto, mensagem);
-        }
+    if (usuarioSalvo.getEmail() != null && !usuarioSalvo.getEmail().isBlank()) {
+        String assunto = "Código de Verificação - Cefoods";
+        String mensagem = "Olá, " + usuarioSalvo.getNome() + ",\n\n" +
+            "Seu código de verificação é: " + code + "\n\n" +
+            "Ele expira em 15 minutos. Digite este código no app para confirmar seu e-mail.\n\n" +
+            "Se não foi você que solicitou, ignore.";
+        mailService.enviarEmailDeTexto(usuarioSalvo.getEmail(), assunto, mensagem);
+    }
 
         return usuarioSalvo;
     }
@@ -109,6 +114,45 @@ public class UsuarioService {
         String assunto = "Novo link de verificação - Cefoods";
         String mensagem = "Olá, " + u.getNome() + ",\n\nSegue novo link para verificar seu e-mail (24h):\n" + linkVerificacao;
         mailService.enviarEmailDeTexto(u.getEmail(), assunto, mensagem);
+    }
+
+    @Transactional
+    public void reenviarCodigo(String email) {
+        Usuario u = usuarioRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("Usuário com esse e-mail não encontrado"));
+        if (Boolean.TRUE.equals(u.getEmail_verificado())) {
+            throw new IllegalStateException("E-mail já verificado");
+        }
+        String code = gerarCodigo6();
+        u.setEmail_verification_code(code);
+        u.setEmail_verification_code_expira(LocalDateTime.now().plusMinutes(15));
+        usuarioRepository.save(u);
+        String assunto = "Novo código de verificação - Cefoods";
+        String mensagem = "Olá, " + u.getNome() + ",\n\nSeu novo código é: " + code + " (válido por 15 minutos).";
+        mailService.enviarEmailDeTexto(u.getEmail(), assunto, mensagem);
+    }
+
+    @Transactional
+    public boolean confirmarCodigo(String email, String code) {
+        return usuarioRepository.findByEmailAndEmailVerificationCode(email, code)
+                .map(u -> {
+                    if (u.getEmail_verification_code_expira() != null && u.getEmail_verification_code_expira().isBefore(LocalDateTime.now())) {
+                        throw new IllegalStateException("Código expirado");
+                    }
+                    u.setEmail_verificado(true);
+                    u.setEmail_verification_code(null);
+                    u.setEmail_verification_code_expira(null);
+                    u.setEmail_verification_token(null);
+                    u.setEmail_verification_expira(null);
+                    usuarioRepository.save(u);
+                    return true;
+                }).orElse(false);
+    }
+
+    private String gerarCodigo6() {
+        SecureRandom r = new SecureRandom();
+        int n = r.nextInt(1_000_000); // 0..999999
+        return String.format("%06d", n);
     }
 
     // ... (outros métodos do seu serviço)

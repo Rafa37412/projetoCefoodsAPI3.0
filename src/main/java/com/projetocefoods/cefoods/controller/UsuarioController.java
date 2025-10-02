@@ -13,7 +13,8 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/usuarios")
+// Suporta ambos os caminhos: /usuarios (original) e /users (frontend inglês)
+@RequestMapping({"/usuarios","/users"})
 public class UsuarioController {
 
     @Autowired
