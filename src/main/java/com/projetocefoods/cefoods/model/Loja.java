@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.List; // IMPORTAR A LISTA
+import java.util.ArrayList; // IMPORTAR ARRAYLIST
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
@@ -36,7 +38,7 @@ public class Loja {
 
     private Boolean status;
 
-    private Boolean manual_override; // ✅ novo campo
+    private Boolean manual_override;
 
     private Boolean visivel;
     
@@ -53,4 +55,14 @@ public class Loja {
     private Double avaliacao_media;
     
     private Integer total_pedidos;
+
+    // ===== RELAÇÃO ADICIONADA AQUI =====
+    @OneToMany(
+        mappedBy = "loja",
+        cascade = CascadeType.ALL,
+        orphanRemoval = true,
+        fetch = FetchType.EAGER // <<-- A CORREÇÃO PRINCIPAL
+    )
+    @Builder.Default
+    private List<HorarioFuncionamento> horarios = new ArrayList<>();
 }

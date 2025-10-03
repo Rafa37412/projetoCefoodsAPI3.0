@@ -18,7 +18,7 @@ public class HorarioFuncionamento {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_loja", nullable = false)
+    @JoinColumn(name = "id_loja")
     private Loja loja;
 
     @Enumerated(EnumType.STRING)
