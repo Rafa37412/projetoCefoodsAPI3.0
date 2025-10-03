@@ -9,7 +9,6 @@ import org.springframework.transaction.annotation.Transactional; // Importe para
 
 import java.util.Optional;
 import java.time.LocalDateTime;
-import java.util.UUID;
 import java.security.SecureRandom;
 
 @Service
@@ -58,11 +57,7 @@ public class UsuarioService {
         novoUsuario.setData_cadastro(LocalDateTime.now());
         novoUsuario.setAtivo(true);
 
-    // Gera token de verificação (UUID longo) e código de 6 dígitos curto
-    String token = UUID.randomUUID().toString();
-    novoUsuario.setEmail_verification_token(token);
-    novoUsuario.setEmail_verification_expira(LocalDateTime.now().plusHours(24));
-
+    // Gera apenas código de verificação (token UUID legacy removido)
     String code = gerarCodigo6();
     novoUsuario.setEmail_verification_code(code);
     novoUsuario.setEmail_verification_code_expira(LocalDateTime.now().plusMinutes(15));
@@ -82,39 +77,7 @@ public class UsuarioService {
         return usuarioSalvo;
     }
 
-    @Transactional
-    public boolean verificarEmail(String token) {
-        if (token == null || token.isBlank()) return false;
-        return usuarioRepository.findByEmailVerificationToken(token)
-                .map(u -> {
-                    if (u.getEmail_verificado() != null && u.getEmail_verificado()) return true; // já verificado
-                    if (u.getEmail_verification_expira() != null && u.getEmail_verification_expira().isBefore(LocalDateTime.now())) {
-                        throw new IllegalStateException("Token expirado. Solicite novo envio.");
-                    }
-                    u.setEmail_verificado(true);
-                    u.setEmail_verification_token(null);
-                    u.setEmail_verification_expira(null);
-                    usuarioRepository.save(u);
-                    return true;
-                }).orElse(false);
-    }
-
-    @Transactional
-    public void reenviarVerificacao(String email) {
-        Usuario u = usuarioRepository.findByEmail(email)
-                .orElseThrow(() -> new IllegalArgumentException("Usuário com esse e-mail não encontrado"));
-        if (Boolean.TRUE.equals(u.getEmail_verificado())) {
-            throw new IllegalStateException("E-mail já verificado");
-        }
-        String token = UUID.randomUUID().toString();
-        u.setEmail_verification_token(token);
-        u.setEmail_verification_expira(LocalDateTime.now().plusHours(24));
-        usuarioRepository.save(u);
-        String linkVerificacao = "https://seu-dominio-ou-frontend.com/verificar-email?token=" + token;
-        String assunto = "Novo link de verificação - Cefoods";
-        String mensagem = "Olá, " + u.getNome() + ",\n\nSegue novo link para verificar seu e-mail (24h):\n" + linkVerificacao;
-        mailService.enviarEmailDeTexto(u.getEmail(), assunto, mensagem);
-    }
+    // Métodos de verificação via token legacy removidos
 
     @Transactional
     public void reenviarCodigo(String email) {
@@ -142,8 +105,6 @@ public class UsuarioService {
                     u.setEmail_verificado(true);
                     u.setEmail_verification_code(null);
                     u.setEmail_verification_code_expira(null);
-                    u.setEmail_verification_token(null);
-                    u.setEmail_verification_expira(null);
                     usuarioRepository.save(u);
                     return true;
                 }).orElse(false);
@@ -153,6 +114,55 @@ public class UsuarioService {
         SecureRandom r = new SecureRandom();
         int n = r.nextInt(1_000_000); // 0..999999
         return String.format("%06d", n);
+    }
+
+    // ======================= RECUPERAÇÃO DE SENHA =======================
+    @Transactional
+    public void solicitarRecuperacaoSenha(String email) {
+        Usuario u = usuarioRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("Usuário não encontrado"));
+        if (!Boolean.TRUE.equals(u.getEmail_verificado())) {
+            throw new IllegalStateException("E-mail ainda não verificado");
+        }
+        String code = gerarCodigo6();
+        u.setToken_recuperacao(code);
+        u.setToken_recuperacao_expira(LocalDateTime.now().plusMinutes(15));
+        usuarioRepository.save(u);
+        String assunto = "Código para redefinição de senha - Cefoods";
+        String msg = "Olá, " + u.getNome() + ",\n\nSeu código para redefinir a senha é: " + code + " (válido por 15 minutos).\n\nSe não foi você, ignore.";
+        mailService.enviarEmailDeTexto(u.getEmail(), assunto, msg);
+    }
+
+    @Transactional
+    public void reenviarRecuperacaoSenha(String email) {
+        solicitarRecuperacaoSenha(email); // mesma lógica
+    }
+
+    @Transactional
+    public void validarCodigoRecuperacao(String email, String code) {
+        Usuario u = usuarioRepository.findByEmailAndTokenRecuperacao(email, code)
+                .orElseThrow(() -> new IllegalArgumentException("Código inválido"));
+        if (u.getToken_recuperacao_expira() != null && u.getToken_recuperacao_expira().isBefore(LocalDateTime.now())) {
+            throw new IllegalStateException("Código expirado");
+        }
+        // Marca apenas que o código foi validado mantendo-o até redefinição ou podemos limpar já.
+        // Aqui optamos por manter até a redefinição efetiva.
+    }
+
+    @Transactional
+    public void redefinirSenha(String email, String code, String novaSenha) {
+        Usuario u = usuarioRepository.findByEmailAndTokenRecuperacao(email, code)
+                .orElseThrow(() -> new IllegalArgumentException("Código inválido"));
+        if (u.getToken_recuperacao_expira() != null && u.getToken_recuperacao_expira().isBefore(LocalDateTime.now())) {
+            throw new IllegalStateException("Código expirado" );
+        }
+        if (!Boolean.TRUE.equals(u.getEmail_verificado())) {
+            throw new IllegalStateException("E-mail não verificado" );
+        }
+        u.setSenha(passwordEncoder.encode(novaSenha));
+        u.setToken_recuperacao(null);
+        u.setToken_recuperacao_expira(null);
+        usuarioRepository.save(u);
     }
 
     // ... (outros métodos do seu serviço)

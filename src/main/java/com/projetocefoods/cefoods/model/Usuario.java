@@ -55,13 +55,8 @@ public class Usuario {
     private Boolean email_verificado;
 
     private String token_recuperacao;
-
-    // Token para verificação de e-mail pós cadastro
-    private String email_verification_token;
-
-    // Data/hora de expiração do token de verificação
-    private LocalDateTime email_verification_expira;
-
+    private LocalDateTime token_recuperacao_expira;
+    // (Legacy token-based verification removed. Using only 6-digit code now.)
     // Código numérico de 6 dígitos para verificação rápida
     private String email_verification_code;
 

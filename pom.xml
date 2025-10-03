@@ -23,6 +23,11 @@
     </properties>
 
     <dependencies>
+        <!-- Flyway para controlar migrações de banco (remoção de colunas legadas etc.) -->
+        <dependency>
+            <groupId>org.flywaydb</groupId>
+            <artifactId>flyway-core</artifactId>
+        </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-mail</artifactId>
