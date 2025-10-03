@@ -7,7 +7,6 @@ import org.springframework.security.crypto.password.PasswordEncoder; // Importe 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional; // Importe para transações
 
-import java.util.Optional;
 import java.time.LocalDateTime;
 import java.security.SecureRandom;
 
@@ -24,7 +23,7 @@ public class UsuarioService {
      * Busca um usuário pelo seu login.
      * (Mantendo o método que você já tinha para o AuthController)
      */
-    public Optional<Usuario> buscarPorLogin(String login) {
+    public java.util.Optional<Usuario> buscarPorLogin(String login) {
         return usuarioRepository.findByLogin(login);
     }
     
