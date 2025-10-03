@@ -26,6 +26,37 @@ public class UsuarioService {
     public java.util.Optional<Usuario> buscarPorLogin(String login) {
         return usuarioRepository.findByLogin(login);
     }
+
+    /**
+     * Autentica usuário com suporte a migração transparente de senhas legadas não-BCrypt.
+     * Caso a senha armazenada ainda esteja em texto plano (não começa com $2a/$2b/$2y),
+     * faz a comparação direta; se bater, re-hash e salva imediatamente.
+     */
+    @Transactional
+    public java.util.Optional<Usuario> autenticar(String login, String senhaPura) {
+        return usuarioRepository.findByLogin(login).flatMap(u -> {
+            String armazenada = u.getSenha();
+            if (armazenada == null) return java.util.Optional.empty();
+            boolean ehBCrypt = armazenada.startsWith("$2a$") || armazenada.startsWith("$2b$") || armazenada.startsWith("$2y$");
+            if (ehBCrypt) {
+                if (passwordEncoder.matches(senhaPura, armazenada)) {
+                    return java.util.Optional.of(u);
+                } else {
+                    return java.util.Optional.empty();
+                }
+            } else {
+                // Legacy: texto puro no banco
+                if (armazenada.equals(senhaPura)) {
+                    // Atualiza para BCrypt (upgrade de segurança transparente)
+                    u.setSenha(passwordEncoder.encode(senhaPura));
+                    usuarioRepository.save(u);
+                    return java.util.Optional.of(u);
+                } else {
+                    return java.util.Optional.empty();
+                }
+            }
+        });
+    }
     
     /**
      * Cadastra um novo usuário, com validação de duplicidade,
