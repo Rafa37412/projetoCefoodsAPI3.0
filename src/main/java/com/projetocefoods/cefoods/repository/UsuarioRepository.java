@@ -17,11 +17,13 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
 
     // Usamos @Query porque o campo na entidade está em snake_case (email_verification_code)
     @Query("SELECT u FROM Usuario u WHERE u.email = :email AND u.email_verification_code = :code")
-    Optional<Usuario> findByEmailAndEmailVerificationCode(@Param("email") String email, @Param("code") String code);
+    Optional<Usuario> findByEmailAndEmail_verification_code(@Param("email") String email, @Param("code") String code);
 
-    Optional<Usuario> findByToken_recuperacao(String token_recuperacao); // acesso direto pelo campo
+    // Recuperação (buscar só pelo token)
+    @Query("SELECT u FROM Usuario u WHERE u.token_recuperacao = :token")
+    Optional<Usuario> findByTokenRecuperacao(@Param("token") String token);
 
     // Recuperação de senha: combinar email + código
     @Query("SELECT u FROM Usuario u WHERE u.email = :email AND u.token_recuperacao = :code")
-    Optional<Usuario> findByEmailAndTokenRecuperacao(@Param("email") String email, @Param("code") String tokenRecuperacao);
+    Optional<Usuario> findByEmailAndToken_recuperacao(@Param("email") String email, @Param("code") String tokenRecuperacao);
 }

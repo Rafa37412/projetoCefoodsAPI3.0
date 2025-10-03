@@ -96,7 +96,7 @@ public class UsuarioService {
 
     @Transactional
     public boolean confirmarCodigo(String email, String code) {
-        return usuarioRepository.findByEmailAndEmailVerificationCode(email, code)
+    return usuarioRepository.findByEmailAndEmail_verification_code(email, code)
                 .map(u -> {
                     if (u.getEmail_verification_code_expira() != null && u.getEmail_verification_code_expira().isBefore(LocalDateTime.now())) {
                         throw new IllegalStateException("Código expirado");
@@ -139,7 +139,7 @@ public class UsuarioService {
 
     @Transactional
     public void validarCodigoRecuperacao(String email, String code) {
-        Usuario u = usuarioRepository.findByEmailAndTokenRecuperacao(email, code)
+    Usuario u = usuarioRepository.findByEmailAndToken_recuperacao(email, code)
                 .orElseThrow(() -> new IllegalArgumentException("Código inválido"));
         if (u.getToken_recuperacao_expira() != null && u.getToken_recuperacao_expira().isBefore(LocalDateTime.now())) {
             throw new IllegalStateException("Código expirado");
@@ -150,7 +150,7 @@ public class UsuarioService {
 
     @Transactional
     public void redefinirSenha(String email, String code, String novaSenha) {
-        Usuario u = usuarioRepository.findByEmailAndTokenRecuperacao(email, code)
+    Usuario u = usuarioRepository.findByEmailAndToken_recuperacao(email, code)
                 .orElseThrow(() -> new IllegalArgumentException("Código inválido"));
         if (u.getToken_recuperacao_expira() != null && u.getToken_recuperacao_expira().isBefore(LocalDateTime.now())) {
             throw new IllegalStateException("Código expirado" );
