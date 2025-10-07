@@ -3,6 +3,7 @@ package com.projetocefoods.cefoods.service;
 import com.projetocefoods.cefoods.model.Usuario;
 import com.projetocefoods.cefoods.repository.UsuarioRepository;
 import lombok.RequiredArgsConstructor; // Importe esta anotação do Lombok
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder; // Importe o PasswordEncoder
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional; // Importe para transações
@@ -12,6 +13,7 @@ import java.security.SecureRandom;
 
 @Service
 @RequiredArgsConstructor // Anotação do Lombok que cria o construtor para você
+@Slf4j
 public class UsuarioService {
 
     // Com @RequiredArgsConstructor, as dependências podem ser 'final' e não precisam de @Autowired
@@ -24,7 +26,14 @@ public class UsuarioService {
      * (Mantendo o método que você já tinha para o AuthController)
      */
     public java.util.Optional<Usuario> buscarPorLogin(String login) {
-        return usuarioRepository.findByLogin(login);
+        var lista = usuarioRepository.findAllByLogin(login);
+        if (lista.isEmpty()) return java.util.Optional.empty();
+        if (lista.size() > 1) {
+            log.error("Inconsistência: {} usuários encontrados com login='{}' ao buscarPorLogin", lista.size(), login);
+            // Política temporária: escolher o de maior id (assumindo mais recente) até limpeza dos duplicados
+            return java.util.Optional.of(lista.stream().max(java.util.Comparator.comparingLong(Usuario::getId)).get());
+        }
+        return java.util.Optional.of(lista.get(0));
     }
 
     /**
@@ -34,15 +43,20 @@ public class UsuarioService {
      */
     @Transactional
     public java.util.Optional<Usuario> autenticar(String login, String senhaPura) {
-        return usuarioRepository.findByLogin(login).flatMap(u -> {
+        var lista = usuarioRepository.findAllByLogin(login);
+        if (lista.isEmpty()) return java.util.Optional.empty();
+        if (lista.size() > 1) {
+            log.error("Login duplicado detectado durante autenticação: login='{}' quantidade={}", login, lista.size());
+        }
+        return lista.stream().flatMap(u -> {
             String armazenada = u.getSenha();
-            if (armazenada == null) return java.util.Optional.empty();
+            if (armazenada == null) return java.util.stream.Stream.empty();
             boolean ehBCrypt = armazenada.startsWith("$2a$") || armazenada.startsWith("$2b$") || armazenada.startsWith("$2y$");
             if (ehBCrypt) {
                 if (passwordEncoder.matches(senhaPura, armazenada)) {
-                    return java.util.Optional.of(u);
+                    return java.util.stream.Stream.of(u);
                 } else {
-                    return java.util.Optional.empty();
+                    return java.util.stream.Stream.empty();
                 }
             } else {
                 // Legacy: texto puro no banco
@@ -50,12 +64,12 @@ public class UsuarioService {
                     // Atualiza para BCrypt (upgrade de segurança transparente)
                     u.setSenha(passwordEncoder.encode(senhaPura));
                     usuarioRepository.save(u);
-                    return java.util.Optional.of(u);
+                    return java.util.stream.Stream.of(u);
                 } else {
-                    return java.util.Optional.empty();
+                    return java.util.stream.Stream.empty();
                 }
             }
-        });
+        }).findFirst();
     }
     
     /**
@@ -67,7 +81,7 @@ public class UsuarioService {
     @Transactional
     public Usuario cadastrarNovoUsuario(Usuario novoUsuario) {
         // 1. VALIDAÇÃO: Verifica se o login já existe
-        if (usuarioRepository.findByLogin(novoUsuario.getLogin()).isPresent()) {
+        if (!usuarioRepository.findAllByLogin(novoUsuario.getLogin()).isEmpty()) {
             // Lança uma exceção específica que pode ser tratada no Controller
             throw new IllegalStateException("O login '" + novoUsuario.getLogin() + "' já está em uso.");
         }

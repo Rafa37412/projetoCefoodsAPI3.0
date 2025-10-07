@@ -19,30 +19,35 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody @Validated LoginRequest req) {
-        return usuarioService.autenticar(req.login(), req.senha())
-                .<ResponseEntity<?>>map(u -> {
-                    LoginResponse response = new LoginResponse(
-                            u.getId(),
-                            u.getNome(),
-                            null,
-                            u.getLogin(),
-                            u.getEmail(),
-                            u.getTelefone(),
-                            u.getCpf(),
-                            u.getData_nascimento() != null ? u.getData_nascimento().toString() : null,
-                            u.getTipo_usuario(),
-                            u.getTipo_perfil(),
-                            null,
-                            u.getChave_pix(),
-                            u.getFoto_perfil(),
-                            u.getData_cadastro() != null ? u.getData_cadastro().toString() : null,
-                            u.getAtivo(),
-                            u.getUltimo_acesso() != null ? u.getUltimo_acesso().toString() : null,
-                            u.getEmail_verificado(),
-                            u.getToken_recuperacao());
-                    return ResponseEntity.ok(response);
-                })
-                .orElse(ResponseEntity.status(401).body(new MessageResponse("Login ou senha inválidos")));
+        try {
+            return usuarioService.autenticar(req.login(), req.senha())
+                    .<ResponseEntity<?>>map(u -> {
+                        LoginResponse response = new LoginResponse(
+                                u.getId(),
+                                u.getNome(),
+                                null, // sobrenome
+                                u.getLogin(),
+                                u.getEmail(),
+                                u.getTelefone(),
+                                u.getCpf(),
+                                u.getData_nascimento() != null ? u.getData_nascimento().toString() : null,
+                                u.getTipo_usuario(),
+                                u.getTipo_perfil(),
+                                null, // possuiLoja - ajustar se houver lógica
+                                u.getChave_pix(),
+                                u.getFoto_perfil(),
+                                u.getData_cadastro() != null ? u.getData_cadastro().toString() : null,
+                                u.getAtivo(),
+                                u.getUltimo_acesso() != null ? u.getUltimo_acesso().toString() : null,
+                                u.getEmail_verificado(),
+                                u.getToken_recuperacao()
+                        );
+                        return ResponseEntity.ok(response);
+                    })
+                    .orElseGet(() -> ResponseEntity.status(401).body(new MessageResponse("Login ou senha inválidos")));
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body(new MessageResponse("Erro interno durante autenticação"));
+        }
     }
 
     @PostMapping("/register")
