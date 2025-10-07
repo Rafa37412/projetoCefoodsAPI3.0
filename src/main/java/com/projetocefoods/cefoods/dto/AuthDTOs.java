@@ -25,4 +25,10 @@ public class AuthDTOs {
     String tokenRecuperacao
 ) {}
 
+    public record ResetPasswordRequest(
+            @NotBlank String email,
+            @NotBlank String code,
+            @NotBlank String novaSenha
+    ) {}
+
 }

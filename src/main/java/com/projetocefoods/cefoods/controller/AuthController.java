@@ -2,6 +2,7 @@ package com.projetocefoods.cefoods.controller;
 
 import com.projetocefoods.cefoods.dto.AuthDTOs.LoginRequest;
 import com.projetocefoods.cefoods.dto.AuthDTOs.LoginResponse;
+import com.projetocefoods.cefoods.dto.AuthDTOs.ResetPasswordRequest;
 import com.projetocefoods.cefoods.dto.MessageResponse;
 import com.projetocefoods.cefoods.model.Usuario;
 import com.projetocefoods.cefoods.service.UsuarioService;
@@ -59,22 +60,19 @@ public class AuthController {
             return ResponseEntity.badRequest().body(new MessageResponse(e.getMessage()));
         }
     }
-    // Endpoints legacy (/verify, /resend-verification) removidos. Agora usamos somente código de 6 dígitos.
-
-    // Reenviar somente o código de 6 dígitos
-    @PostMapping("/resend-code")
-    public ResponseEntity<?> reenviarCodigo(@RequestParam("email") String email) {
+    // ==================== VERIFICAÇÃO DE E-MAIL ====================
+    @PostMapping("/verification/resend-code")
+    public ResponseEntity<?> reenviarCodigoVerificacao(@RequestParam("email") String email) {
         try {
             usuarioService.reenviarCodigo(email);
-            return ResponseEntity.ok(new MessageResponse("Código reenviado"));
+            return ResponseEntity.ok(new MessageResponse("Código de verificação reenviado"));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(new MessageResponse(e.getMessage()));
         }
     }
 
-    // Confirmar código de 6 dígitos
-    @PostMapping("/confirm-code")
-    public ResponseEntity<?> confirmarCodigo(@RequestParam("email") String email, @RequestParam("code") String code) {
+    @PostMapping("/verification/confirm-code")
+    public ResponseEntity<?> confirmarCodigoVerificacao(@RequestParam("email") String email, @RequestParam("code") String code) {
         try {
             boolean ok = usuarioService.confirmarCodigo(email, code);
             if (ok) return ResponseEntity.ok(new MessageResponse("E-mail verificado com sucesso"));
@@ -85,8 +83,8 @@ public class AuthController {
     }
 
     // ==================== RECUPERAÇÃO DE SENHA ====================
-    @PostMapping("/password/forgot")
-    public ResponseEntity<?> solicitarRecuperacao(@RequestParam("email") String email) {
+    @PostMapping("/forgot-password")
+    public ResponseEntity<?> forgotPassword(@RequestParam("email") String email) {
         try {
             usuarioService.solicitarRecuperacaoSenha(email);
             return ResponseEntity.ok(new MessageResponse("Código de recuperação enviado"));
@@ -95,8 +93,8 @@ public class AuthController {
         }
     }
 
-    @PostMapping("/password/resend")
-    public ResponseEntity<?> reenviarRecuperacao(@RequestParam("email") String email) {
+    @PostMapping("/resend-code")
+    public ResponseEntity<?> resendRecoveryCode(@RequestParam("email") String email) {
         try {
             usuarioService.reenviarRecuperacaoSenha(email);
             return ResponseEntity.ok(new MessageResponse("Novo código de recuperação enviado"));
@@ -105,23 +103,29 @@ public class AuthController {
         }
     }
 
-    @PostMapping("/password/validate-code")
-    public ResponseEntity<?> validarCodigo(@RequestParam("email") String email, @RequestParam("code") String code) {
+    @PostMapping("/confirm-code")
+    public ResponseEntity<?> confirmRecoveryCode(@RequestParam("email") String email, @RequestParam("code") String code) {
         try {
             usuarioService.validarCodigoRecuperacao(email, code);
             return ResponseEntity.ok(new MessageResponse("Código válido"));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(new MessageResponse("Código inválido"));
+        } catch (IllegalStateException e) {
+            return ResponseEntity.badRequest().body(new MessageResponse("Código expirado"));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(new MessageResponse(e.getMessage()));
         }
     }
 
-    @PostMapping("/password/reset")
-    public ResponseEntity<?> redefinirSenha(@RequestParam("email") String email,
-                                            @RequestParam("code") String code,
-                                            @RequestParam("newPassword") String novaSenha) {
+    @PostMapping("/reset-password")
+    public ResponseEntity<?> resetPassword(@RequestBody @Validated ResetPasswordRequest request) {
         try {
-            usuarioService.redefinirSenha(email, code, novaSenha);
+            usuarioService.redefinirSenha(request.email(), request.code(), request.novaSenha());
             return ResponseEntity.ok(new MessageResponse("Senha alterada com sucesso"));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(new MessageResponse("Código inválido"));
+        } catch (IllegalStateException e) {
+            return ResponseEntity.badRequest().body(new MessageResponse(e.getMessage()));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(new MessageResponse(e.getMessage()));
         }
