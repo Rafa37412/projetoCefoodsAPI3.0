@@ -6,9 +6,14 @@ import com.projetocefoods.cefoods.model.Usuario;
 import com.projetocefoods.cefoods.repository.UsuarioRepository;
 import com.projetocefoods.cefoods.service.UsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
 
@@ -41,31 +46,32 @@ public class UsuarioController {
     }
 
     // POST - Criar novo usuário com DTO e service (validação + hash de senha + email)
-    @PostMapping
-    public ResponseEntity<?> criarUsuario(@RequestBody CreateUsuario dto) {
+    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> criarUsuario(@RequestBody @Validated CreateUsuario dto) {
         try {
-            Usuario usuario = Usuario.builder()
-                    .nome(dto.nome())
-                    .login(dto.login())
-                    .email(dto.email())
-                    .senha(dto.senha()) // service irá codificar
-                    .telefone(dto.telefone())
-                    .cpf(dto.cpf())
-                    .data_nascimento(dto.data_nascimento())
-                    .tipo_usuario(dto.tipo_usuario())
-                    .tipo_perfil(dto.tipo_perfil())
-                    .chave_pix(dto.chave_pix())
-                    .foto_perfil(dto.foto_perfil())
-                    .ativo(true)
-                    .email_verificado(false)
-                    .possui_loja(false)
-                    .data_cadastro(java.time.LocalDateTime.now())
-                    .build();
-            Usuario salvo = usuarioService.cadastrarNovoUsuario(usuario);
+            Usuario salvo = usuarioService.cadastrarNovoUsuario(montarUsuario(dto, dto.foto_perfil()));
             // senha já write-only; retornando salvo sem expor senha
             return ResponseEntity.ok(sanitizar(salvo));
         } catch (IllegalStateException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> criarUsuarioComFoto(
+            @RequestPart("dados") @Validated CreateUsuario dto,
+            @RequestPart(value = "foto_perfil", required = false) MultipartFile fotoPerfil) {
+        try {
+            String fotoBase64 = null;
+            if (fotoPerfil != null && !fotoPerfil.isEmpty()) {
+                fotoBase64 = Base64.getEncoder().encodeToString(fotoPerfil.getBytes());
+            }
+            Usuario salvo = usuarioService.cadastrarNovoUsuario(montarUsuario(dto, fotoBase64));
+            return ResponseEntity.ok(sanitizar(salvo));
+        } catch (IllegalStateException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (IOException e) {
+            return ResponseEntity.internalServerError().body("Erro ao processar imagem de perfil");
         }
     }
 
@@ -141,5 +147,26 @@ public class UsuarioController {
     private Usuario sanitizar(Usuario u) {
         u.setSenha(null);
         return u;
+    }
+
+    private Usuario montarUsuario(CreateUsuario dto, String fotoBase64Override) {
+        String fotoDefinitiva = fotoBase64Override != null ? fotoBase64Override : dto.foto_perfil();
+        return Usuario.builder()
+                .nome(dto.nome())
+                .login(dto.login())
+                .email(dto.email())
+                .senha(dto.senha()) // service irá codificar
+                .telefone(dto.telefone())
+                .cpf(dto.cpf())
+                .data_nascimento(dto.data_nascimento())
+                .tipo_usuario(dto.tipo_usuario())
+                .tipo_perfil(dto.tipo_perfil())
+                .chave_pix(dto.chave_pix())
+                .foto_perfil(fotoDefinitiva)
+                .ativo(true)
+                .email_verificado(false)
+                .possui_loja(false)
+                .data_cadastro(java.time.LocalDateTime.now())
+                .build();
     }
 }
