@@ -9,6 +9,7 @@ import com.projetocefoods.cefoods.dto.MessageResponse;
 import com.projetocefoods.cefoods.model.Usuario;
 import com.projetocefoods.cefoods.service.UsuarioService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/auth")
 @CrossOrigin(origins = "*")
+@Slf4j
 @RequiredArgsConstructor
 public class AuthController {
     private final UsuarioService usuarioService;
@@ -89,9 +91,13 @@ public class AuthController {
     public ResponseEntity<?> forgotPassword(@RequestBody @Validated EmailOnlyRequest request) {
         try {
             usuarioService.solicitarRecuperacaoSenha(request.email());
-            return ResponseEntity.ok(new MessageResponse("Código de recuperação enviado"));
+            return ResponseEntity.ok(new MessageResponse("Se o e-mail estiver cadastrado e verificado, enviaremos um código"));
+        } catch (IllegalArgumentException | IllegalStateException e) {
+            log.warn("Falha ao solicitar recuperação para {}: {}", request.email(), e.getMessage());
+            return ResponseEntity.ok(new MessageResponse("Se o e-mail estiver cadastrado e verificado, enviaremos um código"));
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(new MessageResponse(e.getMessage()));
+            log.error("Erro inesperado ao solicitar recuperação de senha para {}", request.email(), e);
+            return ResponseEntity.internalServerError().body(new MessageResponse("Erro interno ao solicitar recuperação"));
         }
     }
 
@@ -99,9 +105,13 @@ public class AuthController {
     public ResponseEntity<?> resendRecoveryCode(@RequestBody @Validated EmailOnlyRequest request) {
         try {
             usuarioService.reenviarRecuperacaoSenha(request.email());
-            return ResponseEntity.ok(new MessageResponse("Novo código de recuperação enviado"));
+            return ResponseEntity.ok(new MessageResponse("Se o e-mail estiver cadastrado e verificado, enviaremos um novo código"));
+        } catch (IllegalArgumentException | IllegalStateException e) {
+            log.warn("Falha ao reenviar código para {}: {}", request.email(), e.getMessage());
+            return ResponseEntity.ok(new MessageResponse("Se o e-mail estiver cadastrado e verificado, enviaremos um novo código"));
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(new MessageResponse(e.getMessage()));
+            log.error("Erro inesperado ao reenviar código de recuperação para {}", request.email(), e);
+            return ResponseEntity.internalServerError().body(new MessageResponse("Erro interno ao reenviar código"));
         }
     }
 
