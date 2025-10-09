@@ -1,5 +1,7 @@
 package com.projetocefoods.cefoods.controller;
 
+import com.projetocefoods.cefoods.dto.AuthDTOs.ConfirmCodeRequest;
+import com.projetocefoods.cefoods.dto.AuthDTOs.EmailOnlyRequest;
 import com.projetocefoods.cefoods.dto.AuthDTOs.LoginRequest;
 import com.projetocefoods.cefoods.dto.AuthDTOs.LoginResponse;
 import com.projetocefoods.cefoods.dto.AuthDTOs.ResetPasswordRequest;
@@ -62,9 +64,9 @@ public class AuthController {
     }
     // ==================== VERIFICAÇÃO DE E-MAIL ====================
     @PostMapping("/verification/resend-code")
-    public ResponseEntity<?> reenviarCodigoVerificacao(@RequestParam("email") String email) {
+    public ResponseEntity<?> reenviarCodigoVerificacao(@RequestBody @Validated EmailOnlyRequest request) {
         try {
-            usuarioService.reenviarCodigo(email);
+            usuarioService.reenviarCodigo(request.email());
             return ResponseEntity.ok(new MessageResponse("Código de verificação reenviado"));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(new MessageResponse(e.getMessage()));
@@ -72,9 +74,9 @@ public class AuthController {
     }
 
     @PostMapping("/verification/confirm-code")
-    public ResponseEntity<?> confirmarCodigoVerificacao(@RequestParam("email") String email, @RequestParam("code") String code) {
+    public ResponseEntity<?> confirmarCodigoVerificacao(@RequestBody @Validated ConfirmCodeRequest request) {
         try {
-            boolean ok = usuarioService.confirmarCodigo(email, code);
+            boolean ok = usuarioService.confirmarCodigo(request.email(), request.code());
             if (ok) return ResponseEntity.ok(new MessageResponse("E-mail verificado com sucesso"));
             return ResponseEntity.badRequest().body(new MessageResponse("Código inválido"));
         } catch (IllegalStateException e) {
@@ -84,9 +86,9 @@ public class AuthController {
 
     // ==================== RECUPERAÇÃO DE SENHA ====================
     @PostMapping("/forgot-password")
-    public ResponseEntity<?> forgotPassword(@RequestParam("email") String email) {
+    public ResponseEntity<?> forgotPassword(@RequestBody @Validated EmailOnlyRequest request) {
         try {
-            usuarioService.solicitarRecuperacaoSenha(email);
+            usuarioService.solicitarRecuperacaoSenha(request.email());
             return ResponseEntity.ok(new MessageResponse("Código de recuperação enviado"));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(new MessageResponse(e.getMessage()));
@@ -94,9 +96,9 @@ public class AuthController {
     }
 
     @PostMapping("/resend-code")
-    public ResponseEntity<?> resendRecoveryCode(@RequestParam("email") String email) {
+    public ResponseEntity<?> resendRecoveryCode(@RequestBody @Validated EmailOnlyRequest request) {
         try {
-            usuarioService.reenviarRecuperacaoSenha(email);
+            usuarioService.reenviarRecuperacaoSenha(request.email());
             return ResponseEntity.ok(new MessageResponse("Novo código de recuperação enviado"));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(new MessageResponse(e.getMessage()));
@@ -104,9 +106,9 @@ public class AuthController {
     }
 
     @PostMapping("/confirm-code")
-    public ResponseEntity<?> confirmRecoveryCode(@RequestParam("email") String email, @RequestParam("code") String code) {
+    public ResponseEntity<?> confirmRecoveryCode(@RequestBody @Validated ConfirmCodeRequest request) {
         try {
-            usuarioService.validarCodigoRecuperacao(email, code);
+            usuarioService.validarCodigoRecuperacao(request.email(), request.code());
             return ResponseEntity.ok(new MessageResponse("Código válido"));
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(new MessageResponse("Código inválido"));

@@ -31,4 +31,13 @@ public class AuthDTOs {
             @NotBlank String novaSenha
     ) {}
 
+    public record EmailOnlyRequest(
+        @NotBlank String email
+    ) {}
+
+    public record ConfirmCodeRequest(
+        @NotBlank String email,
+        @NotBlank String code
+    ) {}
+
 }
