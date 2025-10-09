@@ -135,7 +135,7 @@ public class UsuarioService {
                         usuarioSalvo.getLogin(), e);
                 // Aqui você não lança a exceção, para não reverter o cadastro,
                 // mas o log.error irá te avisar sobre a falha no envio.
-            }
+            } // teste
         }
 
         return usuarioSalvo;
