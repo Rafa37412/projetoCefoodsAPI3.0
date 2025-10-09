@@ -37,7 +37,8 @@ public class SecurityConfig {
                 "http://localhost:4200",
                 "https://seu-dominio-frontend.com",
                 "https://cefoodsapp.com",
-                "https://cefoodsapi-1-0-bd59ae6e7ee0.herokuapp.com"
+                "https://cefoodsapi-1-0-bd59ae6e7ee0.herokuapp.com",
+                "https://api.pagar.me"
         ));
         cfg.setAllowedMethods(List.of("GET","POST","PUT","DELETE","PATCH","OPTIONS"));
         // Cabeçalhos amplos para evitar bloqueio em preflight, incluindo customizados

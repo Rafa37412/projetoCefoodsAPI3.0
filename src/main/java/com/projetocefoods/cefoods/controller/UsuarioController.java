@@ -76,60 +76,24 @@ public class UsuarioController {
     }
 
     // PUT - Atualizar usuário existente
-    @PutMapping("/{id}")
+    @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> atualizar(@PathVariable("id") Long id, @RequestBody UsuarioUpdateDTO dto) {
-        Optional<Usuario> usuarioOptional = usuarioRepository.findById(id);
+        return aplicarAtualizacao(id, dto);
+    }
 
-        if (usuarioOptional.isPresent()) {
-            Usuario usuario = usuarioOptional.get();
-
-            // Atualizar apenas campos não nulos
-            if (dto.getNome() != null)
-                usuario.setNome(dto.getNome());
-            if (dto.getLogin() != null)
-                usuario.setLogin(dto.getLogin());
-            if (dto.getEmail() != null)
-                usuario.setEmail(dto.getEmail());
-
-            // Aqui está o cuidado com a senha
-            if (dto.getSenha() != null && !dto.getSenha().isEmpty()) {
-                if (passwordEncoder != null) {
-                    usuario.setSenha(passwordEncoder.encode(dto.getSenha()));
-                } else {
-                    usuario.setSenha(dto.getSenha()); // fallback sem encoder configurado
-                }
+    @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> atualizarComFoto(
+            @PathVariable("id") Long id,
+            @RequestPart("dados") UsuarioUpdateDTO dto,
+            @RequestPart(value = "foto_perfil", required = false) MultipartFile fotoPerfil) {
+        try {
+            if (fotoPerfil != null && !fotoPerfil.isEmpty()) {
+                dto.setFoto_perfil(Base64.getEncoder().encodeToString(fotoPerfil.getBytes()));
             }
-
-            if (dto.getTelefone() != null)
-                usuario.setTelefone(dto.getTelefone());
-            if (dto.getCpf() != null)
-                usuario.setCpf(dto.getCpf());
-            if (dto.getData_nascimento() != null)
-                usuario.setData_nascimento(dto.getData_nascimento());
-            if (dto.getTipo_usuario() != null)
-                usuario.setTipo_usuario(dto.getTipo_usuario());
-            if (dto.getTipo_perfil() != null)
-                usuario.setTipo_perfil(dto.getTipo_perfil());
-            if (dto.getChave_pix() != null)
-                usuario.setChave_pix(dto.getChave_pix());
-            if (dto.getFoto_perfil() != null)
-                usuario.setFoto_perfil(dto.getFoto_perfil());
-            if (dto.getAtivo() != null)
-                usuario.setAtivo(dto.getAtivo());
-            if (dto.getEmail_verificado() != null)
-                usuario.setEmail_verificado(dto.getEmail_verificado());
-            if (dto.getToken_recuperacao() != null)
-                usuario.setToken_recuperacao(dto.getToken_recuperacao());
-            if (dto.getUltimo_acesso() != null)
-                usuario.setUltimo_acesso(dto.getUltimo_acesso());
-            if (dto.getPossui_loja() != null)
-                usuario.setPossui_loja(dto.getPossui_loja());
-
-            Usuario atualizado = usuarioRepository.save(usuario);
-            return ResponseEntity.ok(sanitizar(atualizado));
+            return aplicarAtualizacao(id, dto);
+        } catch (IOException e) {
+            return ResponseEntity.internalServerError().body("Erro ao processar imagem de perfil");
         }
-
-        return ResponseEntity.notFound().build();
     }
 
     // DELETE - Excluir usuário
@@ -168,5 +132,58 @@ public class UsuarioController {
                 .possui_loja(false)
                 .data_cadastro(java.time.LocalDateTime.now())
                 .build();
+    }
+
+    private ResponseEntity<?> aplicarAtualizacao(Long id, UsuarioUpdateDTO dto) {
+        Optional<Usuario> usuarioOptional = usuarioRepository.findById(id);
+
+        if (usuarioOptional.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        Usuario usuario = usuarioOptional.get();
+
+        if (dto.getNome() != null)
+            usuario.setNome(dto.getNome());
+        if (dto.getLogin() != null)
+            usuario.setLogin(dto.getLogin());
+        if (dto.getEmail() != null)
+            usuario.setEmail(dto.getEmail());
+
+        if (dto.getSenha() != null && !dto.getSenha().isEmpty()) {
+            if (passwordEncoder != null) {
+                usuario.setSenha(passwordEncoder.encode(dto.getSenha()));
+            } else {
+                usuario.setSenha(dto.getSenha());
+            }
+        }
+
+        if (dto.getTelefone() != null)
+            usuario.setTelefone(dto.getTelefone());
+        if (dto.getCpf() != null)
+            usuario.setCpf(dto.getCpf());
+        if (dto.getData_nascimento() != null)
+            usuario.setData_nascimento(dto.getData_nascimento());
+        if (dto.getTipo_usuario() != null)
+            usuario.setTipo_usuario(dto.getTipo_usuario());
+        if (dto.getTipo_perfil() != null)
+            usuario.setTipo_perfil(dto.getTipo_perfil());
+        if (dto.getChave_pix() != null)
+            usuario.setChave_pix(dto.getChave_pix());
+        if (dto.getFoto_perfil() != null)
+            usuario.setFoto_perfil(dto.getFoto_perfil());
+        if (dto.getAtivo() != null)
+            usuario.setAtivo(dto.getAtivo());
+        if (dto.getEmail_verificado() != null)
+            usuario.setEmail_verificado(dto.getEmail_verificado());
+        if (dto.getToken_recuperacao() != null)
+            usuario.setToken_recuperacao(dto.getToken_recuperacao());
+        if (dto.getUltimo_acesso() != null)
+            usuario.setUltimo_acesso(dto.getUltimo_acesso());
+        if (dto.getPossui_loja() != null)
+            usuario.setPossui_loja(dto.getPossui_loja());
+
+        Usuario atualizado = usuarioRepository.save(usuario);
+        return ResponseEntity.ok(sanitizar(atualizado));
     }
 }
