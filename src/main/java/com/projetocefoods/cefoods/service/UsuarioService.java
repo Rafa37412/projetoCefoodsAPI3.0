@@ -16,7 +16,8 @@ import java.security.SecureRandom;
 @Slf4j
 public class UsuarioService {
 
-    // Com @RequiredArgsConstructor, as dependências podem ser 'final' e não precisam de @Autowired
+    // Com @RequiredArgsConstructor, as dependências podem ser 'final' e não
+    // precisam de @Autowired
     private final UsuarioRepository usuarioRepository;
     private final MailService mailService;
     private final PasswordEncoder passwordEncoder; // Injetando o codificador de senhas
@@ -27,31 +28,38 @@ public class UsuarioService {
      */
     public java.util.Optional<Usuario> buscarPorLogin(String login) {
         var lista = usuarioRepository.findAllByLogin(login);
-        if (lista.isEmpty()) return java.util.Optional.empty();
+        if (lista.isEmpty())
+            return java.util.Optional.empty();
         if (lista.size() > 1) {
             log.error("Inconsistência: {} usuários encontrados com login='{}' ao buscarPorLogin", lista.size(), login);
-            // Política temporária: escolher o de maior id (assumindo mais recente) até limpeza dos duplicados
+            // Política temporária: escolher o de maior id (assumindo mais recente) até
+            // limpeza dos duplicados
             return java.util.Optional.of(lista.stream().max(java.util.Comparator.comparingLong(Usuario::getId)).get());
         }
         return java.util.Optional.of(lista.get(0));
     }
 
     /**
-     * Autentica usuário com suporte a migração transparente de senhas legadas não-BCrypt.
-     * Caso a senha armazenada ainda esteja em texto plano (não começa com $2a/$2b/$2y),
+     * Autentica usuário com suporte a migração transparente de senhas legadas
+     * não-BCrypt.
+     * Caso a senha armazenada ainda esteja em texto plano (não começa com
+     * $2a/$2b/$2y),
      * faz a comparação direta; se bater, re-hash e salva imediatamente.
      */
     @Transactional
     public java.util.Optional<Usuario> autenticar(String login, String senhaPura) {
         var lista = usuarioRepository.findAllByLogin(login);
-        if (lista.isEmpty()) return java.util.Optional.empty();
+        if (lista.isEmpty())
+            return java.util.Optional.empty();
         if (lista.size() > 1) {
             log.error("Login duplicado detectado durante autenticação: login='{}' quantidade={}", login, lista.size());
         }
         return lista.stream().flatMap(u -> {
             String armazenada = u.getSenha();
-            if (armazenada == null) return java.util.stream.Stream.empty();
-            boolean ehBCrypt = armazenada.startsWith("$2a$") || armazenada.startsWith("$2b$") || armazenada.startsWith("$2y$");
+            if (armazenada == null)
+                return java.util.stream.Stream.empty();
+            boolean ehBCrypt = armazenada.startsWith("$2a$") || armazenada.startsWith("$2b$")
+                    || armazenada.startsWith("$2y$");
             if (ehBCrypt) {
                 if (passwordEncoder.matches(senhaPura, armazenada)) {
                     return java.util.stream.Stream.of(u);
@@ -71,11 +79,12 @@ public class UsuarioService {
             }
         }).findFirst();
     }
-    
+
     /**
      * Cadastra um novo usuário, com validação de duplicidade,
      * criptografia de senha e envio de e-mail de boas-vindas.
-     * A anotação @Transactional garante que todas as operações (salvar e enviar email)
+     * A anotação @Transactional garante que todas as operações (salvar e enviar
+     * email)
      * sejam concluídas com sucesso, ou nenhuma delas é efetivada.
      */
     @Transactional
@@ -94,33 +103,43 @@ public class UsuarioService {
         // 2. SEGURANÇA: Criptografa a senha antes de salvar
         String senhaCriptografada = passwordEncoder.encode(novoUsuario.getSenha());
         novoUsuario.setSenha(senhaCriptografada);
-        
+
         // 3. PERSISTÊNCIA: Salva o novo usuário no banco de dados
         // Inicializa status de verificação
         novoUsuario.setEmail_verificado(false);
         novoUsuario.setData_cadastro(LocalDateTime.now());
         novoUsuario.setAtivo(true);
 
-    // Gera apenas código de verificação (token UUID legacy removido)
-    String code = gerarCodigo6();
-    novoUsuario.setEmail_verification_code(code);
-    novoUsuario.setEmail_verification_code_expira(LocalDateTime.now().plusMinutes(15));
+        // Gera apenas código de verificação (token UUID legacy removido)
+        String code = gerarCodigo6();
+        novoUsuario.setEmail_verification_code(code);
+        novoUsuario.setEmail_verification_code_expira(LocalDateTime.now().plusMinutes(15));
 
         Usuario usuarioSalvo = usuarioRepository.save(novoUsuario);
 
-        // 4. ENVIO: E-mail de verificação (somente se forneceu e-mail)
-    if (usuarioSalvo.getEmail() != null && !usuarioSalvo.getEmail().isBlank()) {
-        String assunto = "Código de Verificação - Cefoods";
-        String mensagem = "Olá, " + usuarioSalvo.getNome() + ",\n\n" +
-            "Seu código de verificação é: " + code + "\n\n" +
-            "Ele expira em 15 minutos. Digite este código no app para confirmar seu e-mail.\n\n" +
-            "Se não foi você que solicitou, ignore.";
-        mailService.enviarEmailDeTexto(usuarioSalvo.getEmail(), assunto, mensagem);
-    }
+        // Dentro do método cadastrarNovoUsuario, substitua o bloco de envio de e-mail
+        // por este:
+
+        // 4. ENVIO: E-mail de verificação
+        if (usuarioSalvo.getEmail() != null && !usuarioSalvo.getEmail().isBlank()) {
+            String assunto = "Código de Verificação - Cefoods";
+            String mensagem = "Olá, " + usuarioSalvo.getNome() + ",\n\n" +
+                    "Seu código de verificação é: " + code + "\n\n" +
+                    "Ele expira em 15 minutos. Digite este código no app para confirmar seu e-mail.\n\n" +
+                    "Se não foi você que solicitou, ignore.";
+            try {
+                mailService.enviarEmailDeTexto(usuarioSalvo.getEmail(), assunto, mensagem);
+                log.info("E-mail de verificação enviado com sucesso para {}", usuarioSalvo.getEmail());
+            } catch (Exception e) {
+                log.error("Cadastro do usuário {} bem-sucedido, MAS FALHOU ao enviar o e-mail de verificação.",
+                        usuarioSalvo.getLogin(), e);
+                // Aqui você não lança a exceção, para não reverter o cadastro,
+                // mas o log.error irá te avisar sobre a falha no envio.
+            }
+        }
 
         return usuarioSalvo;
     }
-
     // Métodos de verificação via token legacy removidos
 
     @Transactional
@@ -136,14 +155,20 @@ public class UsuarioService {
         usuarioRepository.save(u);
         String assunto = "Novo código de verificação - Cefoods";
         String mensagem = "Olá, " + u.getNome() + ",\n\nSeu novo código é: " + code + " (válido por 15 minutos).";
-        mailService.enviarEmailDeTexto(u.getEmail(), assunto, mensagem);
+        try {
+            mailService.enviarEmailDeTexto(u.getEmail(), assunto, mensagem);
+        } catch (Exception ex) {
+            log.error("Falha ao enviar e-mail de verificação para {}", email, ex);
+            throw new IllegalStateException("Não foi possível enviar o e-mail de verificação", ex);
+        }
     }
 
     @Transactional
     public boolean confirmarCodigo(String email, String code) {
-    return usuarioRepository.findByEmailAndEmail_verification_code(email, code)
+        return usuarioRepository.findByEmailAndEmail_verification_code(email, code)
                 .map(u -> {
-                    if (u.getEmail_verification_code_expira() != null && u.getEmail_verification_code_expira().isBefore(LocalDateTime.now())) {
+                    if (u.getEmail_verification_code_expira() != null
+                            && u.getEmail_verification_code_expira().isBefore(LocalDateTime.now())) {
                         throw new IllegalStateException("Código expirado");
                     }
                     u.setEmail_verificado(true);
@@ -173,8 +198,14 @@ public class UsuarioService {
         u.setToken_recuperacao_expira(LocalDateTime.now().plusMinutes(15));
         usuarioRepository.save(u);
         String assunto = "Código para redefinição de senha - Cefoods";
-        String msg = "Olá, " + u.getNome() + ",\n\nSeu código para redefinir a senha é: " + code + " (válido por 15 minutos).\n\nSe não foi você, ignore.";
-        mailService.enviarEmailDeTexto(u.getEmail(), assunto, msg);
+        String msg = "Olá, " + u.getNome() + ",\n\nSeu código para redefinir a senha é: " + code
+                + " (válido por 15 minutos).\n\nSe não foi você, ignore.";
+        try {
+            mailService.enviarEmailDeTexto(u.getEmail(), assunto, msg);
+        } catch (Exception ex) {
+            log.error("Falha ao enviar e-mail de recuperação para {}", email, ex);
+            throw new IllegalStateException("Não foi possível enviar o e-mail de recuperação", ex);
+        }
     }
 
     @Transactional
@@ -184,21 +215,22 @@ public class UsuarioService {
 
     @Transactional
     public void validarCodigoRecuperacao(String email, String code) {
-    Usuario u = usuarioRepository.findByEmailAndToken_recuperacao(email, code)
+        Usuario u = usuarioRepository.findByEmailAndToken_recuperacao(email, code)
                 .orElseThrow(() -> new IllegalArgumentException("Código inválido"));
         if (u.getToken_recuperacao_expira() != null && u.getToken_recuperacao_expira().isBefore(LocalDateTime.now())) {
             throw new IllegalStateException("Código expirado");
         }
-        // Marca apenas que o código foi validado mantendo-o até redefinição ou podemos limpar já.
+        // Marca apenas que o código foi validado mantendo-o até redefinição ou podemos
+        // limpar já.
         // Aqui optamos por manter até a redefinição efetiva.
     }
 
     @Transactional
     public void redefinirSenha(String email, String code, String novaSenha) {
-    Usuario u = usuarioRepository.findByEmailAndToken_recuperacao(email, code)
+        Usuario u = usuarioRepository.findByEmailAndToken_recuperacao(email, code)
                 .orElseThrow(() -> new IllegalArgumentException("Código inválido"));
         if (u.getToken_recuperacao_expira() != null && u.getToken_recuperacao_expira().isBefore(LocalDateTime.now())) {
-            throw new IllegalStateException("Código expirado" );
+            throw new IllegalStateException("Código expirado");
         }
         u.setSenha(passwordEncoder.encode(novaSenha));
         u.setToken_recuperacao(null);
