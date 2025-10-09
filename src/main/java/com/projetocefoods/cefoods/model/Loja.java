@@ -2,6 +2,8 @@ package com.projetocefoods.cefoods.model;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 import java.time.LocalDateTime;
 import java.util.List; // IMPORTAR A LISTA
@@ -32,7 +34,7 @@ public class Loja {
     @Column(length = 1000)
     private String descricao;
     
-    @Lob
+    @JdbcTypeCode(SqlTypes.LONGVARCHAR)
     @Column(columnDefinition = "TEXT")
     private String foto_capa;
     
