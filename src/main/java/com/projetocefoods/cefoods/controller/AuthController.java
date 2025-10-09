@@ -91,10 +91,10 @@ public class AuthController {
     public ResponseEntity<?> forgotPassword(@RequestBody @Validated EmailOnlyRequest request) {
         try {
             usuarioService.solicitarRecuperacaoSenha(request.email());
-            return ResponseEntity.ok(new MessageResponse("Se o e-mail estiver cadastrado e verificado, enviaremos um código"));
+            return ResponseEntity.ok(new MessageResponse("Se o e-mail estiver cadastrado, enviaremos um código"));
         } catch (IllegalArgumentException | IllegalStateException e) {
             log.warn("Falha ao solicitar recuperação para {}: {}", request.email(), e.getMessage());
-            return ResponseEntity.ok(new MessageResponse("Se o e-mail estiver cadastrado e verificado, enviaremos um código"));
+            return ResponseEntity.ok(new MessageResponse("Se o e-mail estiver cadastrado, enviaremos um código"));
         } catch (Exception e) {
             log.error("Erro inesperado ao solicitar recuperação de senha para {}", request.email(), e);
             return ResponseEntity.internalServerError().body(new MessageResponse("Erro interno ao solicitar recuperação"));
@@ -105,10 +105,10 @@ public class AuthController {
     public ResponseEntity<?> resendRecoveryCode(@RequestBody @Validated EmailOnlyRequest request) {
         try {
             usuarioService.reenviarRecuperacaoSenha(request.email());
-            return ResponseEntity.ok(new MessageResponse("Se o e-mail estiver cadastrado e verificado, enviaremos um novo código"));
+            return ResponseEntity.ok(new MessageResponse("Se o e-mail estiver cadastrado, enviaremos um novo código"));
         } catch (IllegalArgumentException | IllegalStateException e) {
             log.warn("Falha ao reenviar código para {}: {}", request.email(), e.getMessage());
-            return ResponseEntity.ok(new MessageResponse("Se o e-mail estiver cadastrado e verificado, enviaremos um novo código"));
+            return ResponseEntity.ok(new MessageResponse("Se o e-mail estiver cadastrado, enviaremos um novo código"));
         } catch (Exception e) {
             log.error("Erro inesperado ao reenviar código de recuperação para {}", request.email(), e);
             return ResponseEntity.internalServerError().body(new MessageResponse("Erro interno ao reenviar código"));

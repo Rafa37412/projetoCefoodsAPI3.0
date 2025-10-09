@@ -166,7 +166,7 @@ public class UsuarioService {
         Usuario u = usuarioRepository.findByEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException("Usuário não encontrado"));
         if (!Boolean.TRUE.equals(u.getEmail_verificado())) {
-            throw new IllegalStateException("E-mail ainda não verificado");
+            log.info("Solicitação de recuperação para {} com e-mail não verificado; enviando mesmo assim", email);
         }
         String code = gerarCodigo6();
         u.setToken_recuperacao(code);
@@ -199,9 +199,6 @@ public class UsuarioService {
                 .orElseThrow(() -> new IllegalArgumentException("Código inválido"));
         if (u.getToken_recuperacao_expira() != null && u.getToken_recuperacao_expira().isBefore(LocalDateTime.now())) {
             throw new IllegalStateException("Código expirado" );
-        }
-        if (!Boolean.TRUE.equals(u.getEmail_verificado())) {
-            throw new IllegalStateException("E-mail não verificado" );
         }
         u.setSenha(passwordEncoder.encode(novaSenha));
         u.setToken_recuperacao(null);
