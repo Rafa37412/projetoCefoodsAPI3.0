@@ -44,6 +44,8 @@ public class Usuario {
 
     private String chave_pix;
 
+    @Lob
+    @Column(columnDefinition = "TEXT")
     private String foto_perfil;
 
     private LocalDateTime data_cadastro;
