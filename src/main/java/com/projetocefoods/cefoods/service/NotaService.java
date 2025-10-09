@@ -67,6 +67,16 @@ public class NotaService {
         return salvo;
     }
 
+    @Transactional
+    public Nota criarNota(NotaDTO.CreateNota dto) throws IOException {
+        return criarNota(
+                dto.titulo(),
+                dto.texto(),
+                dto.id_usuario(),
+                dto.id_loja(),
+                null);
+    }
+
     public List<Nota> listarPorLoja(Long idLoja) {
         return notaRepo.findByLojaIdOrderByDataCriacaoDesc(idLoja);
     }

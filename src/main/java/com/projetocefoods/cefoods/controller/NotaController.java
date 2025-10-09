@@ -4,6 +4,7 @@ import com.projetocefoods.cefoods.dto.NotaDTO;
 import com.projetocefoods.cefoods.model.Anexo;
 import com.projetocefoods.cefoods.model.Nota;
 import com.projetocefoods.cefoods.service.NotaService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
@@ -28,6 +29,13 @@ public class NotaController {
             @RequestParam("idLoja") Long idLoja,
             @RequestPart(value = "anexos", required = false) MultipartFile[] anexos) throws Exception {
         Nota salvo = notaService.criarNota(titulo, texto, idUsuario, idLoja, anexos);
+        return ResponseEntity.ok(toResponse(salvo));
+    }
+
+    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<NotaDTO.NotaResponse> criarNotaJson(
+            @Valid @RequestBody NotaDTO.CreateNota dto) throws Exception {
+        Nota salvo = notaService.criarNota(dto);
         return ResponseEntity.ok(toResponse(salvo));
     }
 
