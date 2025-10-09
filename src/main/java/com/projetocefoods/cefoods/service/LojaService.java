@@ -80,16 +80,19 @@ public class LojaService {
                 idx++;
             }
             horarioRepo.saveAll(builderLista);
+            lojaSalva.setHorarios(builderLista);
             log.debug("{} horários persistidos para a loja id={}", builderLista.size(), lojaSalva.getId());
         } else {
             log.debug("Nenhum horário informado para a loja id={}", lojaSalva.getId());
+            lojaSalva.setHorarios(java.util.Collections.emptyList());
         }
 
         return toResponse(lojaSalva);
     }
 
+    @Transactional(readOnly = true)
     public List<LojaResponse> listar() {
-        return lojaRepo.findAll().stream().map(this::toResponse).toList();
+        return lojaRepo.findAllCompleto().stream().map(this::toResponse).toList();
     }
 
     public List<LojaResponse> listarPorUsuario(Long idUsuario) {
@@ -183,9 +186,11 @@ public class LojaService {
                 idx++;
             }
             horarioRepo.saveAll(builderLista);
+            loja.setHorarios(builderLista);
             log.debug("{} horários atualizados para a loja id={}", builderLista.size(), idLoja);
         } else {
             log.debug("Lista de novos horários vazia ou null para loja id={}", idLoja);
+            loja.setHorarios(java.util.Collections.emptyList());
         }
     }
 
@@ -244,9 +249,17 @@ public class LojaService {
                 u.getEmail(),
                 u.getLogin());
 
-        var horarios = horarioRepo.findByLoja(l).stream()
-                .map(h -> new HorarioFuncionamentoDTO(h.getDia_semana(), h.getTurno()))
-                .toList();
+    List<HorarioFuncionamentoDTO> horariosDto;
+    var horariosEntidade = l.getHorarios();
+    if (horariosEntidade != null && !horariosEntidade.isEmpty()) {
+        horariosDto = horariosEntidade.stream()
+            .map(h -> new HorarioFuncionamentoDTO(h.getDia_semana(), h.getTurno()))
+            .toList();
+    } else {
+        horariosDto = horarioRepo.findByLoja(l).stream()
+            .map(h -> new HorarioFuncionamentoDTO(h.getDia_semana(), h.getTurno()))
+            .toList();
+    }
 
         return new LojaResponse(
                 l.getId(),
@@ -264,6 +277,6 @@ public class LojaService {
                 l.getAvaliacao_media(),
                 usuarioDto,
                 l.getManual_override() != null ? l.getManual_override() : false,
-                horarios);
+                horariosDto);
     }
 }

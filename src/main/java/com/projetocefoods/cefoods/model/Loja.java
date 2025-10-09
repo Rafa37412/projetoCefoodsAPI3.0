@@ -32,6 +32,8 @@ public class Loja {
     @Column(length = 1000)
     private String descricao;
     
+    @Lob
+    @Column(columnDefinition = "TEXT")
     private String foto_capa;
     
     private String localizacao;
