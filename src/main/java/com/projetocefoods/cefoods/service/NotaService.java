@@ -11,6 +11,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -25,10 +26,13 @@ public class NotaService {
     @Transactional
     public Nota criarNota(String titulo, String texto, Long idUsuario, Long idLoja, MultipartFile[] anexos)
             throws IOException {
-        Usuario u = usuarioRepo.findById(idUsuario)
+    Long usuarioId = Objects.requireNonNull(idUsuario, "idUsuario é obrigatório");
+    Long lojaId = Objects.requireNonNull(idLoja, "idLoja é obrigatório");
+
+    Usuario u = usuarioRepo.findById(usuarioId)
                 .orElseThrow(() -> new IllegalArgumentException("Usuário não encontrado"));
 
-        Loja l = lojaRepo.findById(idLoja)
+    Loja l = lojaRepo.findById(lojaId)
                 .orElseThrow(() -> new IllegalArgumentException("Loja não encontrada"));
 
         // 🔹 inicializa com lista vazia
@@ -72,8 +76,8 @@ public class NotaService {
         return criarNota(
                 dto.titulo(),
                 dto.texto(),
-                dto.id_usuario(),
-                dto.id_loja(),
+                dto.idUsuario(),
+                dto.idLoja(),
                 null);
     }
 

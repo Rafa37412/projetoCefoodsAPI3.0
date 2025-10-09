@@ -1,15 +1,27 @@
 package com.projetocefoods.cefoods.dto;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+
 import java.time.LocalDateTime;
 import java.util.List;
 
 public class NotaDTO {
 
     public record CreateNota(
-        String titulo,
-        String texto,
-        Long id_usuario,
-        Long id_loja
+            @NotBlank(message = "titulo é obrigatório")
+            String titulo,
+
+            String texto,
+
+            @JsonAlias({"id_usuario", "idUsuario"})
+            @NotNull(message = "id_usuario/idUsuario é obrigatório")
+            Long idUsuario,
+
+            @JsonAlias({"id_loja", "idLoja"})
+            @NotNull(message = "id_loja/idLoja é obrigatório")
+            Long idLoja
     ) {}
 
     public record AnexoResponse(
