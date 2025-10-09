@@ -1,21 +1,25 @@
 package com.projetocefoods.cefoods.controller;
 
+import com.projetocefoods.cefoods.dto.MessageResponse;
 import com.projetocefoods.cefoods.dto.UsuarioDTO.CreateUsuario;
 import com.projetocefoods.cefoods.dto.UsuarioUpdateDTO;
 import com.projetocefoods.cefoods.model.Usuario;
 import com.projetocefoods.cefoods.repository.UsuarioRepository;
 import com.projetocefoods.cefoods.service.UsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 
 import java.io.IOException;
 import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
 // Suporta ambos os caminhos: /usuarios (original) e /users (frontend inglês)
@@ -53,7 +57,7 @@ public class UsuarioController {
             // senha já write-only; retornando salvo sem expor senha
             return ResponseEntity.ok(sanitizar(salvo));
         } catch (IllegalStateException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            return ResponseEntity.badRequest().body(new MessageResponse(e.getMessage()));
         }
     }
 
@@ -69,7 +73,7 @@ public class UsuarioController {
             Usuario salvo = usuarioService.cadastrarNovoUsuario(montarUsuario(dto, fotoBase64));
             return ResponseEntity.ok(sanitizar(salvo));
         } catch (IllegalStateException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            return ResponseEntity.badRequest().body(new MessageResponse(e.getMessage()));
         } catch (IOException e) {
             return ResponseEntity.internalServerError().body("Erro ao processar imagem de perfil");
         }
@@ -185,5 +189,13 @@ public class UsuarioController {
 
         Usuario atualizado = usuarioRepository.save(usuario);
         return ResponseEntity.ok(sanitizar(atualizado));
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<MessageResponse> handleValidationErrors(MethodArgumentNotValidException ex) {
+        String mensagem = ex.getBindingResult().getAllErrors().stream()
+                .map(DefaultMessageSourceResolvable::getDefaultMessage)
+                .collect(Collectors.joining("; "));
+        return ResponseEntity.badRequest().body(new MessageResponse(mensagem));
     }
 }
